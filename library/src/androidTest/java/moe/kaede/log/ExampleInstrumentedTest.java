@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016. Kaede
+ */
+
 package moe.kaede.log;
 
 import android.content.Context;
