@@ -46,15 +46,17 @@ public class BLogTest extends InstrumentationTestCase {
                     .setFormatter(new LogFormatterImpl())
                     .build();
 
-            BLog.initialize(context, setting);
+            BLog.initialize(setting);
             setting = BLog.getSetting();
 
             assertNotNull(setting);
             assertTrue(new File(setting.getLogDir()).exists());
             assertTrue(setting.getLogDir().equals(logDir.getAbsolutePath()));
+            assertTrue(setting.getDefaultTag().equals("TEST"));
             assertTrue(setting.getExpiredDay() == 1);
             assertTrue(setting.getLogcatLevel() == LogLevel.DEBUG);
             assertTrue(setting.getLogfileLevel() == LogLevel.INFO);
+            assertTrue(setting.getLogFormatter() instanceof LogFormatterImpl);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -196,7 +198,7 @@ public class BLogTest extends InstrumentationTestCase {
             boolean b = e.length() == 3;
         } catch (Exception e) {
             //print stacktrace, probably has 15 lines
-            BLog.printStackTrace("TEST", e);
+            BLog.w("TEST", e, null);
         }
 
         LineNumberReader lineNumberReader = null;

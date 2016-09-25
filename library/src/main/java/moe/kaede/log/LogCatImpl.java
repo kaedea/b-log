@@ -17,11 +17,12 @@ import static moe.kaede.log.LogLevel.WARN;
 class LogCatImpl implements Log {
 
     private static final int CHUNK_SIZE = 4000;
-    private static final String EMPTY_MSG = "Empty/NULL";
+    private final String mEmptyMessage;
     private final LogSetting mSetting;
 
     public LogCatImpl(LogSetting setting) {
         mSetting = setting;
+        mEmptyMessage = setting.getLogFormatter().emptyMessage();
     }
 
     @Override
@@ -35,7 +36,7 @@ class LogCatImpl implements Log {
 
     private void separateMessageIfNeed(int logType, String tag, String msg) {
         if (TextUtils.isEmpty(msg)) {
-            logMessage(logType, tag, EMPTY_MSG);
+            logMessage(logType, tag, mEmptyMessage);
             return;
         }
 

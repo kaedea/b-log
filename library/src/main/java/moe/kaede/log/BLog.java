@@ -12,7 +12,8 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * BLog allover Api
+ * BLog is an Android LogCat extended Utility. It can simplify the way you use
+ * {@link android.util.Log}, as well as write our log message into file for after support.
  *
  * @author kaede
  * @version date 16/9/22
@@ -71,9 +72,28 @@ public class BLog {
         }
     }
 
+    /** verbose **/
+    public static void v(String message) {
+        if (checkInit()) {
+            mLogger.verbose(null, message);
+        }
+    }
+
     public static void v(String tag, String message) {
         if (checkInit()) {
             mLogger.verbose(tag, message);
+        }
+    }
+
+    public static void v(Throwable throwable,  String message) {
+        if (checkInit()) {
+            mLogger.verbose(null, throwable, message);
+        }
+    }
+
+    public static void v(String tag, Throwable throwable,  String message) {
+        if (checkInit()) {
+            mLogger.verbose(tag, throwable, message);
         }
     }
 
@@ -83,15 +103,28 @@ public class BLog {
         }
     }
 
+    /** debug **/
+    public static void d(String message) {
+        if (checkInit()) {
+            mLogger.debug(null, message);
+        }
+    }
+
     public static void d(String tag, String message) {
         if (checkInit()) {
             mLogger.debug(tag, message);
         }
     }
 
+    public static void d(Throwable throwable, String message) {
+        if (checkInit()) {
+            mLogger.debug(null, throwable, message);
+        }
+    }
+
     public static void d(String tag, Throwable throwable, String message) {
         if (checkInit()) {
-            mLogger.warn(tag, throwable, message);
+            mLogger.debug(tag, throwable, message);
         }
     }
 
@@ -101,8 +134,29 @@ public class BLog {
         }
     }
 
+    /** info **/
+    public static void i(String message) {
+        if (checkInit()) {
+            mLogger.info(null, message);
+        }
+    }
+
     public static void i(String tag, String message) {
-        mLogger.info(tag, message);
+        if (checkInit()) {
+            mLogger.info(tag, message);
+        }
+    }
+
+    public static void i(Throwable throwable, String message) {
+        if (checkInit()) {
+            mLogger.info(null, throwable, message);
+        }
+    }
+
+    public static void i(String tag, Throwable throwable, String message) {
+        if (checkInit()) {
+            mLogger.info(tag, throwable, message);
+        }
     }
 
     public static void ifmt(String tag, String fmt, Object... args) {
@@ -111,9 +165,22 @@ public class BLog {
         }
     }
 
+    /** warning **/
+    public static void w(String message) {
+        if (checkInit()) {
+            mLogger.warn(null, message);
+        }
+    }
+
     public static void w(String tag, String message) {
         if (checkInit()) {
             mLogger.warn(tag, message);
+        }
+    }
+
+    public static void w(Throwable throwable, String message) {
+        if (checkInit()) {
+            mLogger.warn(null, throwable, message);
         }
     }
 
@@ -129,9 +196,22 @@ public class BLog {
         }
     }
 
+    /** warning **/
+    public static void e(String message) {
+        if (checkInit()) {
+            mLogger.error(null, message);
+        }
+    }
+
     public static void e(String tag, String message) {
         if (checkInit()) {
             mLogger.error(tag, message);
+        }
+    }
+
+    public static void e(Throwable throwable, String message) {
+        if (checkInit()) {
+            mLogger.error(null, throwable, message);
         }
     }
 
@@ -147,6 +227,13 @@ public class BLog {
         }
     }
 
+    /** wtf **/
+    public static void wtf(String message) {
+        if (checkInit()) {
+            mLogger.wtf(null, message);
+        }
+    }
+
     public static void wtf(String tag, String message) {
         if (checkInit()) {
             mLogger.wtf(tag, message);
@@ -156,12 +243,6 @@ public class BLog {
     public static void wtffmt(String tag, String fmt, Object... args) {
         if (checkInit()) {
             mLogger.wtf(tag, fmt, args);
-        }
-    }
-
-    public static void printStackTrace(String tag, Exception e) {
-        if (checkInit()) {
-            mLogger.warn(tag, e, null);
         }
     }
 

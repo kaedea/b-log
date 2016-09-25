@@ -4,7 +4,7 @@
 
 package moe.kaede.log;
 
-import android.content.Context;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -58,39 +58,53 @@ class Logger {
         });
     }
 
-    public void verbose(String tag, String fmt, Object... args) {
+    /** verbose **/
+    public void verbose(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
         log(VERBOSE, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void debug(String tag, String fmt, Object... args) {
+    public void verbose(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+        log(VERBOSE, ensureTag(tag), formatThrowable(message, throwable));
+    }
+
+    /** debug **/
+    public void debug(@Nullable String tag, String fmt, Object... args) {
         log(DEBUG, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void debug(String tag, Throwable throwable, String message) {
+    public void debug(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
         log(DEBUG, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    public void info(String tag, String fmt, Object... args) {
+    /** info **/
+    public void info(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
         log(INFO, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void warn(String tag, String fmt, Object... args) {
+    public void info(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+        log(INFO, ensureTag(tag), formatThrowable(message, throwable));
+    }
+
+    /** warning **/
+    public void warn(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
         log(WARN, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void warn(String tag, Throwable throwable, String message) {
+    public void warn(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
         log(WARN, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    public void error(String tag, String fmt, Object... args) {
+    /** error **/
+    public void error(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
         log(ERROR, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void error(String tag, Throwable throwable, String message) {
+    public void error(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
         log(ERROR, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    public void wtf(String tag, String fmt, Object... args) {
+    /** wtf **/
+    public void wtf(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
         log(ASSERT, ensureTag(tag), formatMessage(fmt, args));
     }
 
@@ -113,7 +127,8 @@ class Logger {
         } catch (Throwable e) {
             if (LogSetting.DEBUG) e.printStackTrace();
 
-            StringBuilder sb = new StringBuilder("format error, fmt = " + fmt + ", args = ");
+            StringBuilder sb = new StringBuilder("format error, fmt = " + String.valueOf(fmt)
+                    + ", args = ");
             for (int i = 0; i < args.length; i++) {
                 Object item = args[i];
                 sb.append(String.valueOf(item));
