@@ -89,4 +89,11 @@ public class BLogApiTest {
         BLog.e(TAG, exception, "runtime exception");
         BLog.e(exception, null);
     }
+
+    @Test
+    public void useEvent() {
+        BLog.event("BLOG", "XX一律不得经商");
+        BLog.event("XX发大财才是坠猴的");
+        BLog.event("做了一点成绩");
+    }
 }

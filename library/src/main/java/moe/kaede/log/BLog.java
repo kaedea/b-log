@@ -5,7 +5,6 @@
 package moe.kaede.log;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
@@ -246,12 +245,20 @@ public class BLog {
         }
     }
 
-    public static void event(@NonNull String eventType, String message) {
+    /** event **/
+    public static void event(String message) {
         if (checkInit()) {
-            mLogger.event(eventType, message);
+            mLogger.event(null, message);
         }
     }
 
+    public static void event(String tag, String message) {
+        if (checkInit()) {
+            mLogger.event(tag, message);
+        }
+    }
+
+    /** others **/
     public static File[] getFilesByDate(Date date) {
         if (checkInit()) {
             return mLogger.queryFilesByDate(date.getTime());

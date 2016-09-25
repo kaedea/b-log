@@ -108,7 +108,8 @@ class Logger {
         log(ASSERT, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void event(String tag, String message) {
+    /** event **/
+    public void event(@Nullable String tag, @Nullable String message) {
         event(mEventLevel, ensureTag(tag), message);
     }
 
@@ -152,9 +153,11 @@ class Logger {
         }
     }
 
-    private void event(int logType, String tag, String message) {
+    private void event(int logLevel, String tag, String message) {
+        mLogCatImpl.log(logLevel, tag, message);
+
         if (mLogEventImpl != null) {
-            mLogEventImpl.log(logType, tag, message);
+            mLogEventImpl.log(logLevel, tag, message);
         }
     }
 
