@@ -4,8 +4,6 @@
 
 package moe.kaede.log;
 
-import android.support.annotation.NonNull;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -29,13 +27,11 @@ class LogFormatterImpl implements LogFormatter {
         mDateFormatter = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault());
     }
 
-    @NonNull
     @Override
     public String emptyMessage() {
         return "Empty/NULL";
     }
 
-    @NonNull
     @Override
     public String buildMessage(int logType, long time, String tag, String msg) {
         StringBuilder sb = new StringBuilder();
@@ -55,7 +51,6 @@ class LogFormatterImpl implements LogFormatter {
             sb.append("  ")
                     .append(msg);
         }
-
 
 
         return sb.toString();

@@ -5,7 +5,6 @@
 package moe.kaede.log;
 
 import android.os.Process;
-import android.support.annotation.NonNull;
 
 import java.io.Closeable;
 import java.io.File;
@@ -76,10 +75,10 @@ class InternalUtils {
         delelteDirectory(file);
     }
 
-    static void delelteDirectory(@NonNull File directory) {
+    static void delelteDirectory(File directory) {
         if (directory.isDirectory()) {
             File[] files = directory.listFiles();
-            for(File file : files) {
+            for (File file : files) {
                 delelteDirectory(file);
             }
         }

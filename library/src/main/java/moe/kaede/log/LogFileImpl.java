@@ -4,7 +4,6 @@
 
 package moe.kaede.log;
 
-import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import java.util.LinkedList;
@@ -62,7 +61,7 @@ class LogFileImpl implements Log {
         return mFormatter.buildMessage(logType, time, tag, msg);
     }
 
-    @WorkerThread
+    // @WorkerThread
     private void writeToFile() {
         if (mFiles.canWrite(LOG_FILE_PATH)) {
             mFiles.writeToFile(mLogCache, LOG_FILE_PATH);

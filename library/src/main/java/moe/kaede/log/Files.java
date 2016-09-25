@@ -4,8 +4,6 @@
 
 package moe.kaede.log;
 
-import android.support.annotation.WorkerThread;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -21,10 +19,17 @@ import java.util.Locale;
 
 class Files {
 
-    private static Files sInstance;
     private static final String LOG_FILE_EXTENSION = ".log";
     private static final String EVENT_FILE_EXTENSION = ".event";
     private static final String FILE_HYPHEN = "-";
+    private static Files sInstance;
+    private final LogSetting mSetting;
+    private final SimpleDateFormat mNameFormatter = new SimpleDateFormat(
+            "yyyyMMdd", Locale.getDefault());
+
+    private Files(LogSetting setting) {
+        mSetting = setting;
+    }
 
     public static Files instance(LogSetting setting) {
         if (sInstance == null) {
@@ -39,14 +44,6 @@ class Files {
 
     public static void release() {
         sInstance = null;
-    }
-
-    private final LogSetting mSetting;
-    private final SimpleDateFormat mNameFormatter = new SimpleDateFormat(
-            "yyyyMMdd", Locale.getDefault());
-
-    private Files(LogSetting setting) {
-        mSetting = setting;
     }
 
     /**
@@ -87,7 +84,7 @@ class Files {
         return file.exists() && file.canWrite();
     }
 
-    @WorkerThread
+    // @WorkerThread
     public void writeToFile(List<String> strs, String filePath) {
         PrintWriter printWriter = null;
         try {
@@ -112,7 +109,7 @@ class Files {
         }
     }
 
-    @WorkerThread
+    // @WorkerThread
     public void cleanExpiredLogs() {
         File folder = new File(mSetting.getLogDir());
         if (folder.exists() && folder.isDirectory()) {

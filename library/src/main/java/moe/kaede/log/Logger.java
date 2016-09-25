@@ -4,7 +4,6 @@
 
 package moe.kaede.log;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -58,58 +57,72 @@ class Logger {
         });
     }
 
-    /** verbose **/
-    public void verbose(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
+    /**
+     * verbose
+     **/
+    public void verbose(String tag, String fmt, Object... args) {
         log(VERBOSE, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void verbose(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+    public void verbose(String tag, Throwable throwable, String message) {
         log(VERBOSE, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    /** debug **/
-    public void debug(@Nullable String tag, String fmt, Object... args) {
+    /**
+     * debug
+     **/
+    public void debug(String tag, String fmt, Object... args) {
         log(DEBUG, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void debug(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+    public void debug(String tag, Throwable throwable, String message) {
         log(DEBUG, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    /** info **/
-    public void info(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
+    /**
+     * info
+     **/
+    public void info(String tag, String fmt, Object... args) {
         log(INFO, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void info(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+    public void info(String tag, Throwable throwable, String message) {
         log(INFO, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    /** warning **/
-    public void warn(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
+    /**
+     * warning
+     **/
+    public void warn(String tag, String fmt, Object... args) {
         log(WARN, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void warn(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+    public void warn(String tag, Throwable throwable, String message) {
         log(WARN, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    /** error **/
-    public void error(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
+    /**
+     * error
+     **/
+    public void error(String tag, String fmt, Object... args) {
         log(ERROR, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    public void error(@Nullable String tag, @Nullable Throwable throwable, @Nullable String message) {
+    public void error(String tag, Throwable throwable, String message) {
         log(ERROR, ensureTag(tag), formatThrowable(message, throwable));
     }
 
-    /** wtf **/
-    public void wtf(@Nullable String tag, @Nullable String fmt, @Nullable Object... args) {
+    /**
+     * wtf
+     **/
+    public void wtf(String tag, String fmt, Object... args) {
         log(ASSERT, ensureTag(tag), formatMessage(fmt, args));
     }
 
-    /** event **/
-    public void event(@Nullable String tag, @Nullable String message) {
+    /**
+     * event
+     **/
+    public void event(String tag, String message) {
         event(mEventLevel, ensureTag(tag), message);
     }
 

@@ -71,7 +71,9 @@ public class BLog {
         }
     }
 
-    /** verbose **/
+    /**
+     * verbose
+     **/
     public static void v(String message) {
         if (checkInit()) {
             mLogger.verbose(null, message);
@@ -84,13 +86,13 @@ public class BLog {
         }
     }
 
-    public static void v(Throwable throwable,  String message) {
+    public static void v(Throwable throwable, String message) {
         if (checkInit()) {
             mLogger.verbose(null, throwable, message);
         }
     }
 
-    public static void v(String tag, Throwable throwable,  String message) {
+    public static void v(String tag, Throwable throwable, String message) {
         if (checkInit()) {
             mLogger.verbose(tag, throwable, message);
         }
@@ -102,7 +104,9 @@ public class BLog {
         }
     }
 
-    /** debug **/
+    /**
+     * debug
+     **/
     public static void d(String message) {
         if (checkInit()) {
             mLogger.debug(null, message);
@@ -133,7 +137,9 @@ public class BLog {
         }
     }
 
-    /** info **/
+    /**
+     * info
+     **/
     public static void i(String message) {
         if (checkInit()) {
             mLogger.info(null, message);
@@ -164,7 +170,9 @@ public class BLog {
         }
     }
 
-    /** warning **/
+    /**
+     * warning
+     **/
     public static void w(String message) {
         if (checkInit()) {
             mLogger.warn(null, message);
@@ -195,7 +203,9 @@ public class BLog {
         }
     }
 
-    /** warning **/
+    /**
+     * warning
+     **/
     public static void e(String message) {
         if (checkInit()) {
             mLogger.error(null, message);
@@ -226,7 +236,9 @@ public class BLog {
         }
     }
 
-    /** wtf **/
+    /**
+     * wtf
+     **/
     public static void wtf(String message) {
         if (checkInit()) {
             mLogger.wtf(null, message);
@@ -245,7 +257,9 @@ public class BLog {
         }
     }
 
-    /** event **/
+    /**
+     * event
+     **/
     public static void event(String message) {
         if (checkInit()) {
             mLogger.event(null, message);
@@ -258,7 +272,9 @@ public class BLog {
         }
     }
 
-    /** others **/
+    /**
+     * others
+     **/
     public static File[] getFilesByDate(Date date) {
         if (checkInit()) {
             return mLogger.queryFilesByDate(date.getTime());

@@ -4,8 +4,6 @@
 
 package moe.kaede.log;
 
-import android.support.annotation.NonNull;
-
 /**
  * Log Message formatter
  *
@@ -14,9 +12,7 @@ import android.support.annotation.NonNull;
  */
 
 public interface LogFormatter {
-    @NonNull
     String emptyMessage();
 
-    @NonNull
     String buildMessage(int logType, long time, String tag, String msg);
 }
