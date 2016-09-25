@@ -28,6 +28,7 @@ public class LogSetting {
     private int mLogcatLevel;
     private int mLogfileLevel;
     private int mEventLevel;
+    private boolean mShowThreadInfo;
     private String mLogDir;
     private String mDefaultTag;
     private LogFormatter mFormatter;
@@ -63,11 +64,16 @@ public class LogSetting {
         return mDefaultTag;
     }
 
+    public boolean isShowThreadInfo() {
+        return mShowThreadInfo;
+    }
+
     public static class Builder {
         private int mExpiredDay;
         private int mLogcatLevel;
         private int mLogfileLevel;
         private int mEventLevel;
+        private boolean mShowThreadInfo;
         private String mLogDir;
         private String mDefaultTag;
         private LogFormatter mFormatter;
@@ -146,6 +152,11 @@ public class LogSetting {
             return this;
         }
 
+        public Builder showThreadInfo(boolean showThreadInfo) {
+            mShowThreadInfo = showThreadInfo;
+            return this;
+        }
+
         public LogSetting build() {
             LogSetting setting = new LogSetting();
             setting.mExpiredDay = mExpiredDay;
@@ -154,10 +165,13 @@ public class LogSetting {
             setting.mEventLevel = mEventLevel;
             setting.mLogDir = mLogDir;
             setting.mDefaultTag = mDefaultTag;
+            setting.mShowThreadInfo = mShowThreadInfo;
+            setting.mFormatter = mFormatter;
 
             if (this.mFormatter == null) {
-                setting.mFormatter = new LogFormatterImpl();
+                setting.mFormatter = new LogFormatterImpl(setting);
             }
+
             return setting;
         }
     }

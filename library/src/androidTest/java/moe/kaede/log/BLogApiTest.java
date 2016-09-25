@@ -23,7 +23,10 @@ public class BLogApiTest {
 
     @Before
     public void setUp() {
-        BLog.initialize(InstrumentationRegistry.getTargetContext());
+        LogSetting setting = new LogSetting.Builder(InstrumentationRegistry.getTargetContext())
+                .showThreadInfo(true)
+                .build();
+        BLog.initialize(setting);
     }
 
     @After

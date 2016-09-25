@@ -17,11 +17,14 @@ import static moe.kaede.log.LogLevel.WARN;
 class LogCatImpl implements Log {
 
     private static final int CHUNK_SIZE = 4000;
+
     private final String mEmptyMessage;
     private final LogSetting mSetting;
+    private final boolean mShowThreadInfo;
 
     public LogCatImpl(LogSetting setting) {
         mSetting = setting;
+        mShowThreadInfo = setting.isShowThreadInfo();
         mEmptyMessage = setting.getLogFormatter().emptyMessage();
     }
 
@@ -57,6 +60,9 @@ class LogCatImpl implements Log {
     private void logMessage(int logType, String tag, String chunk) {
         String[] lines = chunk.split(System.getProperty("line.separator"));
         for (String line : lines) {
+            if (mShowThreadInfo)
+                line = "[" + Thread.currentThread().getName() + "]  " + line;
+
             logcat(logType, tag, line);
         }
     }

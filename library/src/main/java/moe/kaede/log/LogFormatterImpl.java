@@ -16,8 +16,18 @@ import java.util.Locale;
 
 class LogFormatterImpl implements LogFormatter {
 
-    private final SimpleDateFormat mDateFormatter = new SimpleDateFormat(
-            "MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    private final boolean mShowThreadInfo;
+    private final SimpleDateFormat mDateFormatter;
+
+    public LogFormatterImpl() {
+        mShowThreadInfo = false;
+        mDateFormatter = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    }
+
+    public LogFormatterImpl(LogSetting setting) {
+        mShowThreadInfo = setting.isShowThreadInfo();
+        mDateFormatter = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    }
 
     @NonNull
     @Override
@@ -34,8 +44,19 @@ class LogFormatterImpl implements LogFormatter {
                 .append(LogLevel.getLevelName(logType))
                 .append("/")
                 .append(tag)
-                .append("  ")
-                .append(msg);
+                .append("  ");
+
+        if (mShowThreadInfo) {
+            sb.append("[")
+                    .append(Thread.currentThread().getName())
+                    .append("]  ")
+                    .append(msg);
+        } else {
+            sb.append("  ")
+                    .append(msg);
+        }
+
+
 
         return sb.toString();
     }
