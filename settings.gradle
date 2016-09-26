@@ -2,4 +2,5 @@
  * Copyright (c) 2016. Kaede
  */
 
-include ':library'
+include ':blog'
+project(':blog').projectDir = file("library")
