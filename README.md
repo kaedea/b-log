@@ -3,6 +3,10 @@ BLog is an Android LogCat extended Utility. It can simplify the way you use
 
 **BLog is not pronounced 'Blog[blɑg]', but '[bi:bɑg]'.**
 
+> LOG 是任何一种编程语言的第一个API，通常被初学者用来打印 `Hello, World!`。 有研究显示，
+不使用 LOG 或者使用姿势错误的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟
+自己不爱的人结婚，而其馀叁成的人最後只能把遗产留给自己的猫。毕竟爱情需要书写，不能是一整张白纸。
+
 
 ### Feature
  1. Simplified Api for logging message.
