@@ -1,3 +1,6 @@
+## BLog - Android Log Utils
+[![](https://img.shields.io/hexpm/l/plug.svg)](#) [![](https://img.shields.io/badge/minSdk-9-brightgreen.svg)](#) [![Download](https://api.bintray.com/packages/kaedea/moe-studio/b-log/images/download.svg)](https://bintray.com/kaedea/moe-studio/b-log/_latestVersion)
+
 BLog 是 Android SDK 的 LOG 工具 {@link android.util.Log} 的加强版，以方便在开发时用来
 操作调试日志。
 
@@ -12,7 +15,7 @@ BLog 是 Android SDK 的 LOG 工具 {@link android.util.Log} 的加强版，以�
  3. 支持设置LogLevel，方便在生产环境关闭调试用的LOG；
  4. 支持将LOG内容写入文件，以便通过文件LOG定位用户反馈的问题；
 
-注意，经过BLog支持关闭Log的输出，但是在你调用 `BLog.v(String)` 的时候，其实已经造成了性能
+注意，尽管BLog支持关闭Log的输出，但是在你调用 `BLog.v(String)` 的时候，其实已经造成了性能
 丢失，所以请尽量使用正确的姿势来使用BLog，比如
 ```java
 if (BuildConfig.DEBUG) {
