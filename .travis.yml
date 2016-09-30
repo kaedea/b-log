@@ -4,8 +4,8 @@ jdk:
 
 android:
   components:
-    - build-tools-24.0.1
-    - android-24
+    - build-tools-23.0.3
+    - android-23
     - extra-android-m2repository
     - extra-android-support
 
@@ -21,7 +21,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    
+
 env:
  global:
    - JAR_PATH: library/build/intermediates/bundles/release/classes.jar
