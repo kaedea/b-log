@@ -10,7 +10,7 @@ android:
     - extra-android-support
 
 script:
-  - ./gradlew assembleRelease
+  - ./gradlew javadocrelease
   # - ./gradlew bintrayUpload
 
 deploy:
@@ -24,4 +24,4 @@ deploy:
 
 env:
  global:
-   - JAR_PATH: library/build/intermediates/bundles/release/classes.jar
+   - JAR_PATH: library/build/libs
