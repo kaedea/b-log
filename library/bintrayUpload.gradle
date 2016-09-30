@@ -7,13 +7,20 @@ apply plugin: 'com.jfrog.bintray'
 
 // load properties
 Properties properties = new Properties()
-File localPropertiesFile = project.file("local.properties");
-if(localPropertiesFile.exists()){
-    properties.load(localPropertiesFile.newDataInputStream())
-}
+
 File projectPropertiesFile = project.file("project.properties");
 if(projectPropertiesFile.exists()){
     properties.load(projectPropertiesFile.newDataInputStream())
+}
+
+File localPropertiesFile = project.file("local.properties");
+if(localPropertiesFile.exists()){
+    properties.load(localPropertiesFile.newDataInputStream())
+} else {
+    localPropertiesFile = project.file("travis.properties");
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.newDataInputStream())
+    }
 }
 
 // read properties
