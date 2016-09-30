@@ -1,13 +1,18 @@
 language: android
+jdk:
+  - oraclejdk8
+
 android:
   components:
-    - build-tools-24.0.1
-    - android-24
+    - build-tools-23.0.3
+    - android-23
     - extra-android-m2repository
     - extra-android-support
+
 script:
-  - ./gradlew assembleRelease
+  - ./gradlew javadocrelease
   # - ./gradlew bintrayUpload
+
 deploy:
   provider: releases
   api_key:
@@ -19,4 +24,4 @@ deploy:
 
 env:
  global:
-   - JAR_PATH: library/build/intermediates/bundles/release/classes.jar
+   - JAR_PATH: library/build/libs
