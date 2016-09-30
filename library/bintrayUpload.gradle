@@ -128,3 +128,14 @@ javadoc {
         title javadocName
     }
 }
+
+task("bintrayUploadIfTag",type: Jar) {
+    group = "publishing"
+    String tag = System.getenv('TRAVIS_TAG')
+    if (tag?.trim()) {
+        logger.info('bintray upload with tag ' + tag)
+        tasks.bintrayUpload.execute()
+    } else {
+        logger.warn('no tag exist, abort bintray upload.')
+    }
+}

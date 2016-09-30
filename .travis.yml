@@ -16,7 +16,7 @@ android:
 script:
   - ./gradlew javadocrelease
   - ./gradlew jarrelease
-  - ./gradlew bintrayUpload
+  - ./gradlew bintrayUploadIfTag
 
 deploy:
   provider: releases

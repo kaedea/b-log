@@ -4,7 +4,7 @@
 
 apply plugin: 'com.android.library'
 
-version = "0.1.8"
+version = "0.1.8-snapshot"
 
 android {
     compileSdkVersion rootProject.ext.targetSdkVersion
@@ -35,6 +35,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+apply from: "bintrayUpload.gradle"
+
 // http://stackoverflow.com/questions/16763090/how-to-export-library-to-jar-in-android-studio
 // makeJar 1
 // This is the actual solution, as in http://stackoverflow.com/a/19037807/1002054
@@ -55,6 +57,8 @@ makeJar.dependsOn(clearJar, build)
 
 // // makeJar 2
 android.libraryVariants.all { variant ->
+
+
     task("generate${variant.name}Javadoc", type: Javadoc) {
         group = "publishing"
         description "Generates Javadoc for $variant.name."
@@ -68,7 +72,6 @@ android.libraryVariants.all { variant ->
         classifier = "javadoc"
         description "Bundles Javadoc into a JAR file for $variant.name."
         from tasks["generate${variant.name}Javadoc"]
-
     }
 
     task("jar${variant.name}", type: Jar) {
@@ -80,4 +83,4 @@ android.libraryVariants.all { variant ->
     }
 }
 
-apply from: "bintrayUpload.gradle"
+
