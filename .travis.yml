@@ -1,14 +1,18 @@
 language: android
 sudo: true
+jdk: oraclejdk8
 android:
-  components:
-    - tools
-    - platform-tools
-    - build-tools-23.0.2
-    - android-23
-    - extra-google-m2repository
-    - extra-android-m2repository
-    
+    components:
+        - tools
+        - platform-tools
+        - build-tools-24.0.2
+        - android-24
+        - extra-android-m2repository
+    licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
+
 script:
   - ./gradlew javadocrelease
   # - ./gradlew bintrayUpload
