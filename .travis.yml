@@ -16,7 +16,7 @@ android:
 script:
   - ./gradlew javadocrelease
   - ./gradlew jarrelease
-  # - ./gradlew bintrayUpload
+  - ./gradlew bintrayUpload
 
 deploy:
   provider: releases
@@ -30,5 +30,5 @@ deploy:
     tags: true
 
 branches:
-  except:
+  only:
   - /^build.*$/
