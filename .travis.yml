@@ -21,11 +21,8 @@ deploy:
   provider: releases
   api_key:
     secure: ${GH_TOKEN}
-  file: ${JAR_PATH}
+  file:
+    - library/build/libs/blog-${TRAVIS_TAG}-javadoc.jar
   skip_cleanup: true
   on:
     tags: true
-
-env:
- global:
-   - JAR_PATH: library/build/libs
