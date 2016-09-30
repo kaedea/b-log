@@ -1,0 +1,22 @@
+language: android
+android:
+  components:
+    - build-tools-24.0.1
+    - android-24
+    - extra-android-m2repository
+    - extra-android-support
+script:
+  - ./gradlew assembleRelease
+  # - ./gradlew bintrayUpload
+deploy:
+  provider: releases
+  api_key:
+    secure: ${GH_TOKEN}
+  file: ${JAR_PATH}
+  skip_cleanup: true
+  on:
+    tags: true
+
+env:
+ global:
+   - JAR_PATH: library/build/intermediates/bundles/release/classes.jar
