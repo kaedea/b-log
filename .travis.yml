@@ -4,12 +4,10 @@ jdk:
 
 android:
   components:
-    - build-tools-23.0.0
+    - tools
+    - build-tools-23.0.2
     - android-23
-    - android-L
-    - sys-img-x86-android-tv-l
-    - add-on
-    - extra
+    - extra-android-m2repository
 
 script:
   - ./gradlew javadocrelease
