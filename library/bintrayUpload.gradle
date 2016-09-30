@@ -16,11 +16,6 @@ if(projectPropertiesFile.exists()){
 File localPropertiesFile = project.file("local.properties");
 if(localPropertiesFile.exists()){
     properties.load(localPropertiesFile.newDataInputStream())
-} else {
-    localPropertiesFile = project.file("travis.properties");
-    if (localPropertiesFile.exists()) {
-        properties.load(localPropertiesFile.newDataInputStream())
-    }
 }
 
 // read properties
@@ -45,8 +40,8 @@ group = projectGroupId
 
 // bintray configuration
 bintray {
-    user = bintrayUser
-    key = bintrayApikey
+    user = project.hasProperty('bintray.user') ? project.property('bintray.user') : System.getenv('BT_USER')
+    key = project.hasProperty('bintray.apikey') ? project.property('bintray.apikey') : System.getenv('BT_KEY')
 
     configurations = ['archives']
     pkg {
