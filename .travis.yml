@@ -16,7 +16,7 @@ android:
 script:
   - ./gradlew javadocrelease
   - ./gradlew jarrelease
-  - ./gradlew bintrayUpload
+  # - ./gradlew bintrayUpload
 
 deploy:
   provider: releases
@@ -28,3 +28,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
+
+branches:
+  except:
+  - /^build.*$/
