@@ -1,11 +1,18 @@
 language: android
 jdk: oraclejdk8
-language: android
 android:
-  components:
-    - tools # to get the new `repository-11.xml`
-    - tools # to install Android SDK tools 25.1.x (x = 6 right now)
-     # rest
+    components:
+        - build-tools-24.0.0
+        - android-24
+        - platform-tools
+        - extra-android-support
+        - extra-android-m2repository
+        - extra-google-m2repository
+        - extra-google-google_play_services
+    licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
 
 script:
   - ./gradlew javadocrelease
