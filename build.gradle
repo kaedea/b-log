@@ -11,10 +11,10 @@ buildscript {
 
     ext {
         buildGradle = '2.2.0';
-        buildToolsVersion = '24.0.1'
+        buildToolsVersion = '24.0.2'
         targetSdkVersion = 24
         minSdkVersion = 9
-        androidSupportLibraryVersion = '24.0.1'
+        androidSupportLibraryVersion = '23.4.0'
     }
 
     dependencies {

@@ -1,22 +1,30 @@
 language: android
+sudo: true
+jdk: oraclejdk8
 android:
-  components:
-    - build-tools-24.0.1
-    - android-24
-    - extra-android-m2repository
-    - extra-android-support
+    components:
+        - tools
+        - platform-tools
+        - build-tools-24.0.2
+        - android-24
+        - extra-android-m2repository
+    licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
+
 script:
-  - ./gradlew assembleRelease
-  # - ./gradlew bintrayUpload
+  - ./gradlew javadocrelease
+  - ./gradlew jarrelease
+  - ./gradlew bintrayUpload
+
 deploy:
   provider: releases
   api_key:
     secure: ${GH_TOKEN}
-  file: ${JAR_PATH}
+  file:
+    - library/build/libs/blog-${TRAVIS_TAG}-javadoc.jar
+    - library/build/libs/blog-${TRAVIS_TAG}.jar
   skip_cleanup: true
   on:
     tags: true
-
-env:
- global:
-   - JAR_PATH: library/build/intermediates/bundles/release/classes.jar
