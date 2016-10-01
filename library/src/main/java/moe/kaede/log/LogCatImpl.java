@@ -6,14 +6,6 @@ package moe.kaede.log;
 
 import android.text.TextUtils;
 
-import static moe.kaede.log.LogLevel.ASSERT;
-import static moe.kaede.log.LogLevel.DEBUG;
-import static moe.kaede.log.LogLevel.ERROR;
-import static moe.kaede.log.LogLevel.INFO;
-import static moe.kaede.log.LogLevel.NONE;
-import static moe.kaede.log.LogLevel.VERBOSE;
-import static moe.kaede.log.LogLevel.WARN;
-
 class LogCatImpl implements Log {
 
     private static final int CHUNK_SIZE = 4000;
@@ -30,7 +22,7 @@ class LogCatImpl implements Log {
 
     @Override
     public void log(int logLevel, String tag, String msg) {
-        if (mSetting.getLogcatLevel() == NONE || mSetting.getLogcatLevel() > logLevel)
+        if (mSetting.getLogcatLevel() == LogLevel.NONE || mSetting.getLogcatLevel() > logLevel)
             return;
 
         // AndroidLogcat may abort long message, just in case.
@@ -69,22 +61,22 @@ class LogCatImpl implements Log {
 
     private void logcat(int logType, String tag, String chunk) {
         switch (logType) {
-            case VERBOSE:
+            case LogLevel.VERBOSE:
                 android.util.Log.v(tag, chunk);
                 break;
-            case DEBUG:
+            case LogLevel.DEBUG:
                 android.util.Log.d(tag, chunk);
                 break;
-            case INFO:
+            case LogLevel.INFO:
                 android.util.Log.i(tag, chunk);
                 break;
-            case WARN:
+            case LogLevel.WARN:
                 android.util.Log.w(tag, chunk);
                 break;
-            case ERROR:
+            case LogLevel.ERROR:
                 android.util.Log.e(tag, chunk);
                 break;
-            case ASSERT:
+            case LogLevel.ASSERT:
                 android.util.Log.wtf(tag, chunk);
                 break;
             default:

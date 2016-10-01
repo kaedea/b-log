@@ -6,11 +6,19 @@ package moe.kaede.log;
 
 import android.os.Process;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author kaede
@@ -22,6 +30,7 @@ class InternalUtils {
         int pid = Process.myPid();
         StringBuffer cmdline = new StringBuffer();
         InputStream is = null;
+
         try {
             is = new FileInputStream("/proc/" + pid + "/cmdline");
             for (; ; ) {
@@ -30,18 +39,15 @@ class InternalUtils {
                     break;
                 cmdline.append((char) c);
             }
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (Exception e) {
-                }
-            }
+            closeQuietly(is);
         }
+
         String pname = cmdline.toString().trim();
         if (!pname.contains(":")) {
             return "main";
+
         } else {
             return pname.substring(pname.indexOf(":") + 1);
         }
@@ -65,32 +71,47 @@ class InternalUtils {
     }
 
     static void deleteQuietly(File file) {
-        if (file == null || !file.exists()) return;
-
-        if (!file.isDirectory()) {
-            file.delete();
-            return;
-        }
-
-        delelteDirectory(file);
-    }
-
-    static void delelteDirectory(File directory) {
-        if (directory.isDirectory()) {
-            File[] files = directory.listFiles();
-            for (File file : files) {
-                delelteDirectory(file);
-            }
-        }
-        directory.delete();
+        FileUtils.deleteQuietly(file);
     }
 
     static void closeQuietly(Closeable closeable) {
+        IOUtils.closeQuietly(closeable);
+    }
+
+    static String getStackTraceString(Throwable tr) {
+        return android.util.Log.getStackTraceString(tr);
+    }
+
+    static boolean zippingFiles(File[] files, File output) {
+        if (files == null || files.length == 0) return false;
+
+        BufferedInputStream in = null;
+        ZipOutputStream out = null;
         try {
-            if (closeable != null) {
-                closeable.close();
+            FileOutputStream fo = new FileOutputStream(output);
+            out = new ZipOutputStream(new BufferedOutputStream(fo));
+            out.setLevel(Deflater.BEST_COMPRESSION); // best compress
+
+            for (File file : files) {
+                FileInputStream fi = new FileInputStream(file);
+                in = new BufferedInputStream(fi, 2048);
+                String entryName = file.getName();
+                ZipEntry entry = new ZipEntry(entryName);
+                out.putNextEntry(entry);
+                IOUtils.copy(in, out);
+                in.close();
             }
-        } catch (IOException ignore) {
+            return true;
+
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace();
+            }
+            return false;
+
+        } finally {
+            IOUtils.closeQuietly(out);
+            IOUtils.closeQuietly(in);
         }
     }
 }

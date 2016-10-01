@@ -4,23 +4,18 @@
 
 package moe.kaede.log;
 
-import android.text.TextUtils;
-
 import java.util.LinkedList;
 import java.util.List;
-
-import static moe.kaede.log.LogLevel.NONE;
 
 class LogEventImpl implements Log {
 
     private static final int EVENT_TASK_ID = 0x333;
 
-    private final String EVENT_FILE_PATH;
-    private final List<String> mCacheQueue;
+    private final String mFilePath;
     private final byte[] mLock = new byte[0];
     private final LogSetting mSetting;
     private final Files mFiles;
-    private final LogFormatter mFormatter;
+    private final List<Files.LogMessage> mCacheQueue;
 
     private final Runnable mWriteTask = new Runnable() {
         @Override
@@ -33,19 +28,21 @@ class LogEventImpl implements Log {
         mSetting = setting;
         mFiles = Files.instance(setting);
         mCacheQueue = new LinkedList<>();
-        EVENT_FILE_PATH = mFiles.getEventPath();
-        mFormatter = setting.getLogFormatter();
+        mFilePath = mFiles.getEventPath();
     }
 
     @Override
     public void log(int logType, String tag, String msg) {
-        if (mSetting.getLogfileLevel() == NONE || mSetting.getLogfileLevel() > logType) return;
+        if (mSetting.getLogfileLevel() == LogLevel.NONE || mSetting.getLogfileLevel() > logType)
+            return;
 
-        String message = buildEventString(logType, System.currentTimeMillis(), tag, msg);
+        // get logMessage from Object Pools
+        Files.LogMessage logMessage = Files.LogMessage.obtain();
+        logMessage.setMessage(logType, System.currentTimeMillis(), tag, msg);
 
         // add to list
         synchronized (mLock) {
-            mCacheQueue.add(message);
+            mCacheQueue.add(logMessage);
         }
 
         // write to file
@@ -54,17 +51,12 @@ class LogEventImpl implements Log {
         }
     }
 
-    private String buildEventString(int logType, long time, String tag, String msg) {
-        if (TextUtils.isEmpty(msg))
-            msg = mFormatter.emptyMessage();
-
-        return mFormatter.buildMessage(logType, time, tag, msg);
-    }
 
     // @WorkerThread
     private void writeToFile() {
-        if (mFiles.canWrite(EVENT_FILE_PATH)) {
-            mFiles.writeToFile(mCacheQueue, EVENT_FILE_PATH);
+        if (mFiles.canWrite(mFilePath)) {
+            mFiles.writeToFile(mCacheQueue, mFilePath);
+            mCacheQueue.clear();
         }
     }
 }

@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import android.test.InstrumentationTestCase;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -34,6 +33,9 @@ public class BLogTest extends InstrumentationTestCase {
     public void testInitializeWithConfig() throws IOException {
         Context context = getInstrumentation().getTargetContext();
         File logDir = context.getExternalFilesDir("test_log");
+        if (logDir == null)
+            logDir = context.getDir("test_log", Context.MODE_PRIVATE);
+
         logDir.createNewFile();
 
         LogSetting setting = new LogSetting.Builder(context)
@@ -140,7 +142,7 @@ public class BLogTest extends InstrumentationTestCase {
 
         LineNumberReader lineNumberReader1 = null;
         LineNumberReader lineNumberReader2 = null;
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         assertTrue(log.exists());
         assertTrue(event.exists());
@@ -261,7 +263,7 @@ public class BLogTest extends InstrumentationTestCase {
 
         assertTrue(interval < 1000);
 
-        Thread.sleep(10000);
+        Thread.sleep(15000);
 
         ll = new LineNumberReader(new FileReader(log));
         ll.skip(Long.MAX_VALUE);
@@ -271,10 +273,19 @@ public class BLogTest extends InstrumentationTestCase {
         le.skip(Long.MAX_VALUE);
         assertEquals(le.getLineNumber(), 2000);
 
+
+        String path = Files.instance(setting).getZipPath(LogSetting.LOG | LogSetting.EVENT);
+        File[] files = BLog.geLogFilesByDate(LogSetting.LOG | LogSetting.EVENT, null);
+        File output = new File(path);
+
+        assertTrue(!output.exists());
+        assertTrue(InternalUtils.zippingFiles(files, output));
+        assertTrue(output.exists());
+
         BLog.shutdown();
     }
 
-    public void testQueryFiles() throws InterruptedException {
+    public void testGetLogFiles() throws InterruptedException, IOException {
         Context context = getInstrumentation().getTargetContext();
         LogSetting setting = new LogSetting.Builder(context)
                 .showThreadInfo(true)
@@ -290,11 +301,77 @@ public class BLogTest extends InstrumentationTestCase {
 
         Thread.sleep(3000);
 
-        File[] files = BLog.getFilesByDate(new Date());
-
+        File[] files = BLog.geLogFilesByDate(LogSetting.LOG | LogSetting.EVENT, null);
         assertNotNull(files);
         assertEquals(2, files.length);
 
+        files = BLog.geLogFilesByDate(LogSetting.LOG, null);
+        assertNotNull(files);
+        assertEquals(1, files.length);
+        assertTrue(files[0].getAbsolutePath().contains(Files.LOG_FILE_EXTENSION));
+
+        files = BLog.geLogFilesByDate(LogSetting.EVENT, null);
+        assertNotNull(files);
+        assertEquals(1, files.length);
+        assertTrue(files[0].getAbsolutePath().contains(Files.EVENT_FILE_EXTENSION));
+
+        File outDate1 = new File(folder.getAbsolutePath() + File.separator + "20160520-main.log");
+        File outDate3 = new File(folder.getAbsolutePath() + File.separator + "20150602-web.event");
+        File outDate4 = new File(folder.getAbsolutePath() + File.separator + "20130322-main.event");
+        outDate1.createNewFile();
+        outDate3.createNewFile();
+        outDate4.createNewFile();
+
+        files = BLog.getLogFiles(LogSetting.LOG | LogSetting.EVENT);
+        assertNotNull(files);
+        assertEquals(5, files.length);
+
+        files = BLog.getLogFiles(LogSetting.LOG);
+        assertNotNull(files);
+        assertEquals(2, files.length);
+
+        files = BLog.getLogFiles(LogSetting.EVENT);
+        assertNotNull(files);
+        assertEquals(3, files.length);
+
         BLog.shutdown();
+    }
+
+    public void testZippingLogFiles() throws InterruptedException {
+        Context context = getInstrumentation().getTargetContext();
+        LogSetting setting = new LogSetting.Builder(context)
+                .showThreadInfo(true)
+                .build();
+        BLog.initialize(setting);
+
+        File folder = new File(setting.getLogDir());
+        assertTrue(folder.exists());
+        BLog.deleteLogs();
+
+        BLog.d("TEST", "传授一点人生经验");
+        BLog.event("TEST", "Exciting!");
+
+        Thread.sleep(3000);
+
+        String path;
+        path = Files.instance(setting).getZipPath(LogSetting.EVENT);
+        assertTrue(path.contains("event"));
+        path = Files.instance(setting).getZipPath(LogSetting.EVENT | LogSetting.LOG);
+        assertTrue(path.contains("all"));
+        path = Files.instance(setting).getZipPath(LogSetting.LOG);
+        assertTrue(path.contains("log"));
+
+        File[] files = BLog.geLogFilesByDate(LogSetting.LOG, null);
+        File output = new File(path);
+
+        assertTrue(!output.exists());
+        assertTrue(InternalUtils.zippingFiles(files, output));
+        assertTrue(output.exists());
+
+        File all = BLog.zippingLogFiles(LogSetting.LOG | LogSetting.EVENT);
+        assertTrue(all.exists());
+        File event = BLog.zippingLogFilesByDate(LogSetting.EVENT, new Date());
+        assertTrue(event.exists());
+        assertTrue(all.length() > event.length());
     }
 }

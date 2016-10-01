@@ -5,36 +5,39 @@
 package moe.kaede.log;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.File;
-
-import static moe.kaede.log.LogLevel.ASSERT;
-import static moe.kaede.log.LogLevel.DEBUG;
-import static moe.kaede.log.LogLevel.ERROR;
-import static moe.kaede.log.LogLevel.INFO;
-import static moe.kaede.log.LogLevel.VERBOSE;
-import static moe.kaede.log.LogLevel.WARN;
 
 class Logger {
 
     private final int mEventLevel;
     private final String mDefaultTag;
-    private final LogSetting mLogSetting;
-    private final LogCatImpl mLogCatImpl;
-    private final LogFileImpl mLogFileImpl;
-    private final LogEventImpl mLogEventImpl;
+    private final LogSetting mSetting;
+    private final Log mLogCatImpl;
+    private final Log mLogFileImpl;
+    private final Log mLogEventImpl;
     private final Files mFiles;
 
     public Logger(LogSetting setting) {
-        mLogSetting = setting;
+        mSetting = setting;
         mEventLevel = setting.getEventLevel();
         mDefaultTag = setting.getDefaultTag();
-        mLogCatImpl = new LogCatImpl(setting);
-        mLogFileImpl = new LogFileImpl(setting);
-        mLogEventImpl = new LogEventImpl(setting);
-        mFiles = Files.instance(setting);
 
+        if (setting.getLogcatLevel() != LogLevel.NONE) {
+            mLogCatImpl = new LogCatImpl(setting);
+        } else {
+            mLogCatImpl = null;
+        }
+
+        if (setting.getLogfileLevel() != LogLevel.NONE) {
+            mLogFileImpl = new LogFileImpl(setting);
+            mLogEventImpl = new LogEventImpl(setting);
+        } else {
+            mLogFileImpl = null;
+            mLogEventImpl = null;
+        }
+
+        mFiles = Files.instance(setting);
         cleanExpiredFiles();
     }
 
@@ -48,8 +51,8 @@ class Logger {
             public void run() {
                 try {
                     mFiles.cleanExpiredLogs();
-                } catch (Exception e) {
-                    if (LogSetting.DEBUG) {
+                } catch (Throwable e) {
+                    if (mSetting.debuggable()) {
                         e.printStackTrace();
                     }
                 }
@@ -61,62 +64,62 @@ class Logger {
      * verbose
      **/
     public void verbose(String tag, String fmt, Object... args) {
-        log(VERBOSE, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.VERBOSE, ensureTag(tag), formatMessage(fmt, args));
     }
 
     public void verbose(String tag, Throwable throwable, String message) {
-        log(VERBOSE, ensureTag(tag), formatThrowable(message, throwable));
+        log(LogLevel.VERBOSE, ensureTag(tag), formatThrowable(message, throwable));
     }
 
     /**
      * debug
      **/
     public void debug(String tag, String fmt, Object... args) {
-        log(DEBUG, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.DEBUG, ensureTag(tag), formatMessage(fmt, args));
     }
 
     public void debug(String tag, Throwable throwable, String message) {
-        log(DEBUG, ensureTag(tag), formatThrowable(message, throwable));
+        log(LogLevel.DEBUG, ensureTag(tag), formatThrowable(message, throwable));
     }
 
     /**
      * info
      **/
     public void info(String tag, String fmt, Object... args) {
-        log(INFO, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.INFO, ensureTag(tag), formatMessage(fmt, args));
     }
 
     public void info(String tag, Throwable throwable, String message) {
-        log(INFO, ensureTag(tag), formatThrowable(message, throwable));
+        log(LogLevel.INFO, ensureTag(tag), formatThrowable(message, throwable));
     }
 
     /**
      * warning
      **/
     public void warn(String tag, String fmt, Object... args) {
-        log(WARN, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.WARN, ensureTag(tag), formatMessage(fmt, args));
     }
 
     public void warn(String tag, Throwable throwable, String message) {
-        log(WARN, ensureTag(tag), formatThrowable(message, throwable));
+        log(LogLevel.WARN, ensureTag(tag), formatThrowable(message, throwable));
     }
 
     /**
      * error
      **/
     public void error(String tag, String fmt, Object... args) {
-        log(ERROR, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.ERROR, ensureTag(tag), formatMessage(fmt, args));
     }
 
     public void error(String tag, Throwable throwable, String message) {
-        log(ERROR, ensureTag(tag), formatThrowable(message, throwable));
+        log(LogLevel.ERROR, ensureTag(tag), formatThrowable(message, throwable));
     }
 
     /**
      * wtf
      **/
     public void wtf(String tag, String fmt, Object... args) {
-        log(ASSERT, ensureTag(tag), formatMessage(fmt, args));
+        log(LogLevel.ASSERT, ensureTag(tag), formatMessage(fmt, args));
     }
 
     /**
@@ -139,7 +142,7 @@ class Logger {
             return message;
 
         } catch (Throwable e) {
-            if (LogSetting.DEBUG) e.printStackTrace();
+            if (mSetting.debuggable()) e.printStackTrace();
 
             StringBuilder sb = new StringBuilder("format error, fmt = " + String.valueOf(fmt)
                     + ", args = ");
@@ -155,11 +158,13 @@ class Logger {
 
     private String formatThrowable(String message, Throwable throwable) {
         return String.valueOf(message) + " : "
-                + (throwable == null ? "null" : Log.getStackTraceString(throwable));
+                + (throwable == null ? "null" : InternalUtils.getStackTraceString(throwable));
     }
 
     private void log(int logLevel, String tag, String message) {
-        mLogCatImpl.log(logLevel, tag, message);
+        if (mLogCatImpl != null) {
+            mLogCatImpl.log(logLevel, tag, message);
+        }
 
         if (mLogFileImpl != null) {
             mLogFileImpl.log(logLevel, tag, message);
@@ -167,7 +172,9 @@ class Logger {
     }
 
     private void event(int logLevel, String tag, String message) {
-        mLogCatImpl.log(logLevel, tag, message);
+        if (mLogCatImpl != null) {
+            mLogCatImpl.log(logLevel, tag, message);
+        }
 
         if (mLogEventImpl != null) {
             mLogEventImpl.log(logLevel, tag, message);
@@ -175,12 +182,39 @@ class Logger {
     }
 
     public LogSetting getSetting() {
-        return mLogSetting;
+        return mSetting;
     }
 
-    public File[] queryFilesByDate(long ms) {
-        if (mLogFileImpl != null) {
-            return mFiles.queryFilesByDate(ms);
+    public File[] queryFilesByDate(int mode, long ms) {
+        if (mFiles != null) {
+            return mFiles.queryFilesByDate(mode, ms);
+        }
+        return null;
+    }
+
+    public File[] queryFiles(int mode) {
+        if (mFiles != null) {
+            return mFiles.queryFiles(mode);
+        }
+        return null;
+    }
+
+    public File zippingFiles(int mode) {
+        File zipFile = new File(mFiles.getZipPath(mode));
+        InternalUtils.deleteQuietly(zipFile);
+
+        if (InternalUtils.zippingFiles(queryFiles(mode), zipFile)) {
+            return zipFile;
+        }
+        return null;
+    }
+
+    public File zippingFiles(int mode, long ms) {
+        File zipFile = new File(mFiles.getZipPath(mode));
+        InternalUtils.deleteQuietly(zipFile);
+
+        if (InternalUtils.zippingFiles(queryFilesByDate(mode, ms), zipFile)) {
+            return zipFile;
         }
         return null;
     }

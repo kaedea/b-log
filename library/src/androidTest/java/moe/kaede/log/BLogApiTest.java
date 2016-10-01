@@ -25,6 +25,7 @@ public class BLogApiTest {
     public void setUp() {
         LogSetting setting = new LogSetting.Builder(InstrumentationRegistry.getTargetContext())
                 .showThreadInfo(true)
+                .debuggable(true)
                 .build();
         BLog.initialize(setting);
     }

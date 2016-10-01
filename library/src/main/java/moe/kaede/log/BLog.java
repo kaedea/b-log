@@ -5,6 +5,7 @@
 package moe.kaede.log;
 
 import android.content.Context;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class BLog {
     private static boolean checkInit() {
         boolean init = mLogger != null;
 
-        if (!init && LogSetting.DEBUG) {
+        if (!init) {
             Log.w(LogSetting.TAG, "pls call Blog.initialize first!");
         }
 
@@ -275,9 +276,53 @@ public class BLog {
     /**
      * others
      **/
-    public static File[] getFilesByDate(Date date) {
+
+    /**
+     * get all log files
+     *
+     * @param mode mode for filtering log files, support '|' operation,
+     *             see {@link LogSetting#LOG}, {@link LogSetting#EVENT}
+     */
+    public static File[] getLogFiles(int mode) {
         if (checkInit()) {
-            return mLogger.queryFilesByDate(date.getTime());
+            return mLogger.queryFiles(mode);
+        }
+        return null;
+    }
+
+    /**
+     * get log files by day
+     *
+     * @param date retain null if today
+     */
+    public static File[] geLogFilesByDate(int mode, Date date) {
+        if (checkInit()) {
+            if (date == null) {
+                date = new Date(); // today
+            }
+            return mLogger.queryFilesByDate(mode, date.getTime());
+        }
+        return null;
+    }
+
+    /**
+     * zipping log files and return the zip file
+     */
+    @WorkerThread
+    public static File zippingLogFiles(int mode) {
+        if (checkInit()) {
+            return mLogger.zippingFiles(mode);
+        }
+        return null;
+    }
+
+    @WorkerThread
+    public static File zippingLogFilesByDate(int mode, Date date) {
+        if (checkInit()) {
+            if (date == null) {
+                date = new Date(); // today
+            }
+            return mLogger.zippingFiles(mode, date.getTime());
         }
         return null;
     }
