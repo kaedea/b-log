@@ -4,6 +4,8 @@
 
 package moe.kaede.log;
 
+import android.support.annotation.WorkerThread;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,11 +54,17 @@ class LogEventImpl implements Log {
     }
 
 
-    // @WorkerThread
+    @WorkerThread
     private void writeToFile() {
         if (mFiles.canWrite(mFilePath)) {
-            mFiles.writeToFile(mCacheQueue, mFilePath);
-            mCacheQueue.clear();
+            List<Files.LogMessage> list;
+
+            synchronized (mLock) {
+                list = new LinkedList<>(mCacheQueue);
+                mCacheQueue.clear();
+            }
+
+            mFiles.writeToFile(list, mFilePath);
         }
     }
 }

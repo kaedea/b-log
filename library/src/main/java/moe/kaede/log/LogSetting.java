@@ -24,8 +24,8 @@ public class LogSetting {
     static final String DEFAULT_DIR = "blog";
 
     // QUERY MODE
-    static final int LOG = 0x0001;
-    static final int EVENT = 0x0010;
+    public static final int LOG = 0x0001;
+    public static final int EVENT = 0x0010;
 
     private int mExpiredDay;
     private int mLogcatLevel;

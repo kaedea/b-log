@@ -4,6 +4,7 @@
 
 package moe.kaede.log;
 
+import android.support.annotation.WorkerThread;
 import android.support.v4.util.Pools;
 
 import java.io.File;
@@ -114,8 +115,8 @@ class Files {
         return file.exists() && file.canWrite();
     }
 
-    // @WorkerThread
-    public void writeToFile(List<LogMessage> logMessages, String filePath) {
+    @WorkerThread
+    public synchronized void writeToFile(List<LogMessage> logMessages, String filePath) {
         PrintWriter printWriter = null;
         try {
             File file = new File(filePath);
@@ -139,7 +140,7 @@ class Files {
         }
     }
 
-    // @WorkerThread
+    @WorkerThread
     public void cleanExpiredLogs() {
         File folder = new File(mSetting.getLogDir());
         if (folder.exists() && folder.isDirectory()) {
