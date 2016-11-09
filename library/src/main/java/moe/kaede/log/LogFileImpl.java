@@ -40,7 +40,7 @@ class LogFileImpl implements Log {
 
         // get logMessage from Object Pools
         Files.LogMessage logMessage = Files.LogMessage.obtain();
-        logMessage.setMessage(logType, System.currentTimeMillis(), tag, msg);
+        logMessage.setMessage(logType, System.currentTimeMillis(), tag, Thread.currentThread().getName(), msg);
 
         // add to list
         synchronized (mLock) {

@@ -258,6 +258,7 @@ class Files {
         public long time;
         public String tag;
         public String msg;
+        public String thread;
 
         public LogMessage() {
 
@@ -268,15 +269,16 @@ class Files {
             return (instance != null) ? instance : new LogMessage();
         }
 
-        public void setMessage(int logType, long time, String tag, String msg) {
+        public void setMessage(int logType, long time, String tag, String thread, String msg) {
             this.logType = logType;
             this.time = time;
             this.tag = tag;
+            this.thread = thread;
             this.msg = msg;
         }
 
         public String buildMessage(LogFormatter formatter) {
-            return formatter.buildMessage(logType, time, tag, msg);
+            return formatter.buildMessage(logType, time, tag, thread, msg);
         }
 
         public void recycle() {

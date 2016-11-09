@@ -33,7 +33,7 @@ class LogFormatterImpl implements LogFormatter {
     }
 
     @Override
-    public String buildMessage(int logType, long time, String tag, String msg) {
+    public String buildMessage(int logType, long time, String tag, String thread, String msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(mDateFormatter.format(time))
                 .append("  ")
@@ -44,7 +44,7 @@ class LogFormatterImpl implements LogFormatter {
 
         if (mShowThreadInfo) {
             sb.append("[")
-                    .append(Thread.currentThread().getName())
+                    .append(thread)
                     .append("]  ")
                     .append(msg);
         } else {
