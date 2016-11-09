@@ -4,7 +4,7 @@
 
 apply plugin: 'com.android.library'
 
-version = "0.2.10"
+version = "0.2.11"
 
 android {
     compileSdkVersion rootProject.ext.targetSdkVersion
