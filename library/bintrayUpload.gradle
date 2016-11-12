@@ -2,7 +2,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 /*
- * Copyright (c) 2016. Kaede
+ * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
  */
 
 // load properties

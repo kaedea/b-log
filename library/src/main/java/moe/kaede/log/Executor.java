@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Kaede
+ * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
  */
 
 package moe.kaede.log;
@@ -15,6 +15,7 @@ class Executor {
 
     private static final int DELAY_MILLIS = 2000;
     private static Task.Dispatcher sDispatcher;
+
     private static void ensureHandler() {
         if (sDispatcher == null) {
             synchronized (Executor.class) {

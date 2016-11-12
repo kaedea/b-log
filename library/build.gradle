@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2016. Kaede
+ * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
  */
 
 apply plugin: 'com.android.library'
 
-version = "0.2.11"
+version = "0.3.0"
 
 android {
     compileSdkVersion rootProject.ext.targetSdkVersion
