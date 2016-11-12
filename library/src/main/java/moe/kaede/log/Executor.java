@@ -4,9 +4,7 @@
 
 package moe.kaede.log;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
+import moe.kaede.dispatcher.Task;
 
 /**
  * @author kaede
@@ -15,52 +13,44 @@ import android.os.Message;
 
 class Executor {
 
-    private static Executor sInstance = new Executor();
-    private Handler mHandler;
-
-    private Executor() {
-    }
-
-    public static Executor instance() {
-        return sInstance;
-    }
-
-    private void ensureHandler() {
-        if (mHandler == null) {
-            synchronized (Executor.this) {
-                if (mHandler == null) {
-                    HandlerThread thread = new HandlerThread("thread_blog_io");
-                    thread.setPriority(Thread.MIN_PRIORITY);
-                    thread.start();
-                    mHandler = new Handler(thread.getLooper());
+    private static final int DELAY_MILLIS = 2000;
+    private static Task.Dispatcher sDispatcher;
+    private static void ensureHandler() {
+        if (sDispatcher == null) {
+            synchronized (Executor.class) {
+                if (sDispatcher == null) {
+                    sDispatcher = Task.Dispatchers.newSimpleDispatcher();
+                    sDispatcher.start();
                 }
             }
         }
     }
 
-    public void post(Runnable runnable) {
-        if (runnable == null) return;
-
+    public static void post(Runnable runnable) {
+        if (runnable == null) {
+            return;
+        }
         ensureHandler();
-        mHandler.post(runnable);
+        sDispatcher.post(runnable);
     }
 
-    public boolean hasMessages(int what) {
+    public static void post(int what, Runnable runnable) {
+        if (runnable == null) {
+            return;
+        }
         ensureHandler();
-        return mHandler.hasMessages(what);
-    }
-
-    public void postMessage(int what, Runnable runnable) {
-        if (runnable == null) return;
-
-        ensureHandler();
-        Message message = Message.obtain(mHandler, runnable);
-        message.what = what;
-        mHandler.sendMessageDelayed(message, 2000);
+        sDispatcher.postDelay(what, runnable, DELAY_MILLIS);
 
     }
 
-    public void setHandler(Handler handler) {
-        mHandler = handler;
+    public static boolean has(int what) {
+        ensureHandler();
+        return sDispatcher.has(what);
+    }
+
+    public static void setDispatcher(Task.Dispatcher dispatcher) {
+        if (dispatcher != null) {
+            sDispatcher = dispatcher;
+        }
     }
 }

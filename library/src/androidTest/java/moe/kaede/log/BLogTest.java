@@ -103,7 +103,7 @@ public class BLogTest extends InstrumentationTestCase {
     public void testExecutor() throws InterruptedException {
         final int[] i = {0};
         final Looper looper = Looper.myLooper();
-        Executor.instance().post(new Runnable() {
+        Executor.post(new Runnable() {
             @Override
             public void run() {
                 assertTrue(Looper.myLooper() != looper);

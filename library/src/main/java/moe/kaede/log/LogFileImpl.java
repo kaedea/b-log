@@ -48,8 +48,8 @@ class LogFileImpl implements Log {
         }
 
         // write to file
-        if (!Executor.instance().hasMessages(LOG_TASK_ID)) {
-            Executor.instance().postMessage(LOG_TASK_ID, mWriteTask);
+        if (!Executor.has(LOG_TASK_ID)) {
+            Executor.post(LOG_TASK_ID, mWriteTask);
         }
     }
 
