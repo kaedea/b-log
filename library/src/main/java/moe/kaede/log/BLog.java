@@ -11,6 +11,8 @@ import android.util.Log;
 import java.io.File;
 import java.util.Date;
 
+import moe.kaede.dispatcher.Task;
+
 /**
  * BLog is an Android LogCat extended Utility. It can simplify the way you use
  * {@link android.util.Log}, as well as write our log message into file for after support.
@@ -59,6 +61,13 @@ public class BLog {
                 }
             }
         }
+    }
+
+    /**
+     * Set an existing {@link moe.kaede.dispatcher.Task.Dispatcher} for BLog.
+     */
+    public static void setDispatcher(Task.Dispatcher dispatcher) {
+        Executor.setDispatcher(dispatcher);
     }
 
     /**
