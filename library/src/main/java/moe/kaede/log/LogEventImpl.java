@@ -48,8 +48,8 @@ class LogEventImpl implements Log {
         }
 
         // write to file
-        if (!Executor.instance().hasMessages(EVENT_TASK_ID)) {
-            Executor.instance().postMessage(EVENT_TASK_ID, mWriteTask);
+        if (!Executor.has(EVENT_TASK_ID)) {
+            Executor.post(EVENT_TASK_ID, mWriteTask);
         }
     }
 

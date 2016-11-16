@@ -46,7 +46,7 @@ class Logger {
     }
 
     public void cleanExpiredFiles() {
-        Executor.instance().post(new Runnable() {
+        Executor.post(new Runnable() {
             @Override
             public void run() {
                 try {
