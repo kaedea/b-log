@@ -34,13 +34,13 @@ class LogFileImpl implements Log {
     }
 
     @Override
-    public void log(int logType, String tag, String msg) {
-        if (mSetting.getLogfileLevel() == LogLevel.NONE || mSetting.getLogfileLevel() > logType)
+    public void log(int priority, String tag, String msg) {
+        if (mSetting.getLogfileLevel() == LogLevel.NONE || mSetting.getLogfileLevel() > priority)
             return;
 
         // get logMessage from Object Pools
         Files.LogMessage logMessage = Files.LogMessage.obtain();
-        logMessage.setMessage(logType, System.currentTimeMillis(), tag, Thread.currentThread().getName(), msg);
+        logMessage.setMessage(priority, System.currentTimeMillis(), tag, Thread.currentThread().getName(), msg);
 
         // add to list
         synchronized (mLock) {
@@ -48,8 +48,8 @@ class LogFileImpl implements Log {
         }
 
         // write to file
-        if (!Executor.has(LOG_TASK_ID)) {
-            Executor.post(LOG_TASK_ID, mWriteTask);
+        if (!Executor.instance().hasMessages(LOG_TASK_ID)) {
+            Executor.instance().postMessage(LOG_TASK_ID, mWriteTask);
         }
     }
 

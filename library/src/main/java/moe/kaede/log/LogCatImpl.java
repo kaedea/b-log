@@ -21,17 +21,18 @@ class LogCatImpl implements Log {
     }
 
     @Override
-    public void log(int logLevel, String tag, String msg) {
-        if (mSetting.getLogcatLevel() == LogLevel.NONE || mSetting.getLogcatLevel() > logLevel)
+    public void log(int priority, String tag, String msg) {
+        if (mSetting.getLogcatLevel() == LogLevel.NONE || mSetting.getLogcatLevel() > priority) {
             return;
+        }
 
         // AndroidLogcat may abort long message, just in case.
-        separateMessageIfNeed(logLevel, tag, msg);
+        separateMessageIfNeed(priority, tag, msg);
     }
 
-    private void separateMessageIfNeed(int logType, String tag, String msg) {
+    private void separateMessageIfNeed(int priority, String tag, String msg) {
         if (TextUtils.isEmpty(msg)) {
-            logMessage(logType, tag, mEmptyMessage);
+            logMessage(priority, tag, mEmptyMessage);
             return;
         }
 
@@ -39,49 +40,27 @@ class LogCatImpl implements Log {
         int length = bytes.length;
 
         if (length <= CHUNK_SIZE) {
-            logMessage(logType, tag, msg);
+            logMessage(priority, tag, msg);
             return;
         }
 
         for (int i = 0; i < length; i += CHUNK_SIZE) {
             int count = Math.min(length - i, CHUNK_SIZE);
-            logMessage(logType, tag, new String(bytes, i, count));
+            logMessage(priority, tag, new String(bytes, i, count));
         }
     }
 
-    private void logMessage(int logType, String tag, String chunk) {
+    private void logMessage(int priority, String tag, String chunk) {
         String[] lines = chunk.split(System.getProperty("line.separator"));
         for (String line : lines) {
-            if (mShowThreadInfo)
+            if (mShowThreadInfo) {
                 line = "[" + Thread.currentThread().getName() + "]  " + line;
-
-            logcat(logType, tag, line);
+            }
+            logcat(priority, tag, line);
         }
     }
 
-    private void logcat(int logType, String tag, String chunk) {
-        switch (logType) {
-            case LogLevel.VERBOSE:
-                android.util.Log.v(tag, chunk);
-                break;
-            case LogLevel.DEBUG:
-                android.util.Log.d(tag, chunk);
-                break;
-            case LogLevel.INFO:
-                android.util.Log.i(tag, chunk);
-                break;
-            case LogLevel.WARN:
-                android.util.Log.w(tag, chunk);
-                break;
-            case LogLevel.ERROR:
-                android.util.Log.e(tag, chunk);
-                break;
-            case LogLevel.ASSERT:
-                android.util.Log.wtf(tag, chunk);
-                break;
-            default:
-                android.util.Log.d(tag, chunk);
-                break;
-        }
+    private void logcat(int priority, String tag, String chunk) {
+        android.util.Log.println(priority, tag, chunk);
     }
 }

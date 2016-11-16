@@ -5,5 +5,5 @@
 package moe.kaede.log;
 
 interface Log {
-    void log(int logType, String tag, String msg);
+    void log(int priority, String tag, String msg);
 }

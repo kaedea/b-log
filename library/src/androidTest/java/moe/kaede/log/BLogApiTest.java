@@ -78,20 +78,20 @@ public class BLogApiTest {
     public void useLogThrowable() {
         Exception exception = new RuntimeException("一种钦定的感觉");
 
-        BLog.v(TAG, exception, "runtime exception");
-        BLog.v(exception, null);
+        BLog.v(TAG, "runtime exception", exception);
+        BLog.v(null,exception);
 
-        BLog.d(TAG, exception, "runtime exception");
-        BLog.d(exception, null);
+        BLog.d(TAG, "runtime exception", exception);
+        BLog.d(null,exception);
 
-        BLog.i(TAG, exception, "runtime exception");
-        BLog.i(exception, null);
+        BLog.i(TAG, "runtime exception", exception);
+        BLog.i(null,exception);
 
-        BLog.w(TAG, exception, "runtime exception");
-        BLog.w(exception, null);
+        BLog.w(TAG, "runtime exception", exception);
+        BLog.w(null,exception);
 
-        BLog.e(TAG, exception, "runtime exception");
-        BLog.e(exception, null);
+        BLog.e(TAG, "runtime exception", exception);
+        BLog.e(null,exception);
     }
 
     @Test

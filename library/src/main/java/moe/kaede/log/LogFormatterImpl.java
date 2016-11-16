@@ -33,11 +33,11 @@ class LogFormatterImpl implements LogFormatter {
     }
 
     @Override
-    public String buildMessage(int logType, long time, String tag, String thread, String msg) {
+    public String buildMessage(int priority, long time, String tag, String thread, String msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(mDateFormatter.format(time))
                 .append("  ")
-                .append(LogLevel.getLevelName(logType))
+                .append(LogLevel.getLevelName(priority))
                 .append("/")
                 .append(tag)
                 .append("  ");

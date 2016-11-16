@@ -14,5 +14,5 @@ package moe.kaede.log;
 public interface LogFormatter {
     String emptyMessage();
 
-    String buildMessage(int logType, long time, String tag, String thread, String msg);
+    String buildMessage(int priority, long time, String tag, String thread, String msg);
 }

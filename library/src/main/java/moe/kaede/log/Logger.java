@@ -46,7 +46,7 @@ class Logger {
     }
 
     public void cleanExpiredFiles() {
-        Executor.post(new Runnable() {
+        Executor.instance().post(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -161,23 +161,23 @@ class Logger {
                 + (throwable == null ? "null" : InternalUtils.getStackTraceString(throwable));
     }
 
-    private void log(int logLevel, String tag, String message) {
+    private void log(int priority, String tag, String message) {
         if (mLogCatImpl != null) {
-            mLogCatImpl.log(logLevel, tag, message);
+            mLogCatImpl.log(priority, tag, message);
         }
 
         if (mLogFileImpl != null) {
-            mLogFileImpl.log(logLevel, tag, message);
+            mLogFileImpl.log(priority, tag, message);
         }
     }
 
-    private void event(int logLevel, String tag, String message) {
+    private void event(int priority, String tag, String message) {
         if (mLogCatImpl != null) {
-            mLogCatImpl.log(logLevel, tag, message);
+            mLogCatImpl.log(priority, tag, message);
         }
 
         if (mLogEventImpl != null) {
-            mLogEventImpl.log(logLevel, tag, message);
+            mLogEventImpl.log(priority, tag, message);
         }
     }
 

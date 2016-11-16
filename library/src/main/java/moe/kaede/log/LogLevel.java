@@ -22,8 +22,8 @@ public class LogLevel {
     public static final int ASSERT = Log.ASSERT;
     public static final int NONE = ASSERT + 1;
 
-    public static String getLevelName(int logType) {
-        switch (logType) {
+    public static String getLevelName(int priority) {
+        switch (priority) {
             case VERBOSE:
                 return "VERBOSE";
             case DEBUG:

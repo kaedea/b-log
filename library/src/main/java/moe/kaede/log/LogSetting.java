@@ -108,22 +108,22 @@ public class LogSetting {
             return this;
         }
 
-        public Builder setLogcatLevel(int level) {
-            if (LogLevel.isLevelValid(level)) {
-                mLogcatLevel = level;
+        public Builder setLogcatLevel(int priority) {
+            if (LogLevel.isLevelValid(priority)) {
+                mLogcatLevel = priority;
             }
             return this;
         }
 
-        public Builder setLogfileLevel(int level) {
-            if (LogLevel.isLevelValid(level)) {
-                mLogfileLevel = level;
+        public Builder setLogfileLevel(int priority) {
+            if (LogLevel.isLevelValid(priority)) {
+                mLogfileLevel = priority;
             }
             return this;
         }
 
-        public Builder setEventLevel(int eventLevel) {
-            mEventLevel = eventLevel;
+        public Builder setEventLevel(int priority) {
+            mEventLevel = priority;
             return this;
         }
 

@@ -70,6 +70,7 @@ public class BLog {
         Executor.setDispatcher(dispatcher);
     }
 
+
     /**
      * You should call {@link BLog#shutdown()} before you call
      * {@link BLog#initialize(Context)} again.
@@ -96,13 +97,13 @@ public class BLog {
         }
     }
 
-    public static void v(Throwable throwable, String message) {
+    public static void v(String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.verbose(null, throwable, message);
         }
     }
 
-    public static void v(String tag, Throwable throwable, String message) {
+    public static void v(String tag, String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.verbose(tag, throwable, message);
         }
@@ -129,13 +130,13 @@ public class BLog {
         }
     }
 
-    public static void d(Throwable throwable, String message) {
+    public static void d(String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.debug(null, throwable, message);
         }
     }
 
-    public static void d(String tag, Throwable throwable, String message) {
+    public static void d(String tag, String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.debug(tag, throwable, message);
         }
@@ -162,13 +163,13 @@ public class BLog {
         }
     }
 
-    public static void i(Throwable throwable, String message) {
+    public static void i(String message, Throwable throwable) {
         if (checkInit()) {
-            mLogger.info(null, throwable, message);
+            mLogger.verbose(null, throwable, message);
         }
     }
 
-    public static void i(String tag, Throwable throwable, String message) {
+    public static void i(String tag, String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.info(tag, throwable, message);
         }
@@ -195,13 +196,13 @@ public class BLog {
         }
     }
 
-    public static void w(Throwable throwable, String message) {
+    public static void w(String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.warn(null, throwable, message);
         }
     }
 
-    public static void w(String tag, Throwable throwable, String message) {
+    public static void w(String tag, String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.warn(tag, throwable, message);
         }
@@ -228,13 +229,13 @@ public class BLog {
         }
     }
 
-    public static void e(Throwable throwable, String message) {
+    public static void e(String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.error(null, throwable, message);
         }
     }
 
-    public static void e(String tag, Throwable throwable, String message) {
+    public static void e(String tag, String message, Throwable throwable) {
         if (checkInit()) {
             mLogger.error(tag, throwable, message);
         }

@@ -254,7 +254,7 @@ class Files {
     public static class LogMessage {
         private static final Pools.SynchronizedPool<LogMessage> sPool =
                 new Pools.SynchronizedPool(20);
-        public int logType;
+        public int priority;
         public long time;
         public String tag;
         public String msg;
@@ -269,8 +269,8 @@ class Files {
             return (instance != null) ? instance : new LogMessage();
         }
 
-        public void setMessage(int logType, long time, String tag, String thread, String msg) {
-            this.logType = logType;
+        public void setMessage(int priority, long time, String tag, String thread, String msg) {
+            this.priority = priority;
             this.time = time;
             this.tag = tag;
             this.thread = thread;
@@ -278,7 +278,7 @@ class Files {
         }
 
         public String buildMessage(LogFormatter formatter) {
-            return formatter.buildMessage(logType, time, tag, thread, msg);
+            return formatter.buildMessage(priority, time, tag, thread, msg);
         }
 
         public void recycle() {

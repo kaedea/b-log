@@ -177,7 +177,7 @@ public class BLogTest extends InstrumentationTestCase {
             boolean b = e.length() == 3;
         } catch (Exception e) {
             //print stacktrace, probably has 15 lines
-            BLog.w("TEST", e, null);
+            BLog.w("TEST", null, e);
         }
 
         LineNumberReader lineNumberReader = null;
