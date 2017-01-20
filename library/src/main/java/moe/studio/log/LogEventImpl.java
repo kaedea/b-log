@@ -1,22 +1,26 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
 import android.support.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("WeakerAccess")
 class LogEventImpl implements Log {
 
     private static final int EVENT_TASK_ID = 0x333;
 
-    private final String mFilePath;
+    private int mWriteCount;
     private final byte[] mLock = new byte[0];
     private final LogSetting mSetting;
     private final Files mFiles;
+    private final File mEventFile;
     private final List<Files.LogMessage> mCacheQueue;
 
     private final Runnable mWriteTask = new Runnable() {
@@ -30,17 +34,23 @@ class LogEventImpl implements Log {
         mSetting = setting;
         mFiles = Files.instance(setting);
         mCacheQueue = new LinkedList<>();
-        mFilePath = mFiles.getEventPath();
+        mEventFile = mFiles.getEventFile();
+
+        try {
+            InternalUtils.checkCreateFile(mEventFile);
+        } catch (IOException e) {
+            Logger.w("Can not create file.", e);
+        }
     }
 
     @Override
-    public void log(int logType, String tag, String msg) {
-        if (mSetting.getLogfileLevel() == LogLevel.NONE || mSetting.getLogfileLevel() > logType)
+    public void log(int priority, String tag, String msg) {
+        if (mSetting.getLogfilePriority() == LogPriority.NONE || mSetting.getLogfilePriority() > priority)
             return;
 
         // get logMessage from Object Pools
         Files.LogMessage logMessage = Files.LogMessage.obtain();
-        logMessage.setMessage(logType, System.currentTimeMillis(), tag, Thread.currentThread().getName(), msg);
+        logMessage.setMessage(priority, System.currentTimeMillis(), tag, Thread.currentThread().getName(), msg);
 
         // add to list
         synchronized (mLock) {
@@ -48,15 +58,22 @@ class LogEventImpl implements Log {
         }
 
         // write to file
-        if (!Executor.has(EVENT_TASK_ID)) {
-            Executor.post(EVENT_TASK_ID, mWriteTask);
+        if (!Executor.instance().hasMessages(EVENT_TASK_ID)) {
+            Executor.instance().postMessage(EVENT_TASK_ID, mWriteTask);
+        }
+    }
+
+    @Override
+    public void onShutdown() {
+        if (mSetting.debuggable()) {
+            Logger.w("LogEvent is shutdown, file written count = " + mWriteCount);
         }
     }
 
 
     @WorkerThread
     private void writeToFile() {
-        if (mFiles.canWrite(mFilePath)) {
+        if (mFiles.canWrite(mEventFile)) {
             List<Files.LogMessage> list;
 
             synchronized (mLock) {
@@ -64,7 +81,10 @@ class LogEventImpl implements Log {
                 mCacheQueue.clear();
             }
 
-            mFiles.writeToFile(list, mFilePath);
+            mFiles.writeToFile(list, mEventFile);
+            if (mSetting.debuggable()) {
+                mWriteCount ++;
+            }
         }
     }
 }

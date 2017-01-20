@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -26,6 +26,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         String packageName = appContext.getPackageName();
-        assertEquals("moe.kaede.log.test", packageName);
+        assertEquals("moe.studio.log.test", packageName);
     }
 }

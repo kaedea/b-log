@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
 import android.os.Process;
+import android.text.TextUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -15,7 +16,9 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -24,11 +27,13 @@ import java.util.zip.ZipOutputStream;
  * @author kaede
  * @version date 16/9/23
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 class InternalUtils {
 
+    @SuppressWarnings("SpellCheckingInspection")
     static String getProcessName() {
         int pid = Process.myPid();
-        StringBuffer cmdline = new StringBuffer();
+        StringBuilder cmdline = new StringBuilder();
         InputStream is = null;
 
         try {
@@ -53,25 +58,54 @@ class InternalUtils {
         }
     }
 
-    public static void createDir(File dir) {
-        if (!dir.isDirectory()) {
-            dir.delete();
-        }
+    static boolean exist(String path) {
+        return !TextUtils.isEmpty(path) && (new File(path).exists());
+    }
 
-        if (!dir.exists()) {
-            dir.mkdirs();
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    static void checkCreateFile(File file) throws IOException {
+        if (file == null) {
+            throw new IOException("File is null.");
+        }
+        if (file.exists()) {
+            if (!file.isDirectory()) {
+                return;
+            }
+            delete(file);
+        }
+        File parentFile = file.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        if (!file.createNewFile()) {
+            throw new IOException("Create file fail, file already exists.");
         }
     }
 
-    static String ensureSeparator(String path) {
-        if (path.charAt(path.length() - 1) == File.separatorChar) {
-            return path;
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    static void checkCreateDir(File file) throws IOException {
+        if (file == null) {
+            throw new IOException("Dir is null.");
         }
-        return path + File.separator;
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                return;
+            }
+            if (!delete(file)) {
+                throw new IOException("Fail to delete existing file, file = "
+                        + file.getAbsolutePath());
+            }
+            file.mkdir();
+        } else {
+            file.mkdirs();
+        }
+        if (!file.exists() || !file.isDirectory()) {
+            throw new IOException("Fail to create dir, dir = " + file.getAbsolutePath());
+        }
     }
 
-    static void deleteQuietly(File file) {
-        FileUtils.deleteQuietly(file);
+    static boolean delete(File file) {
+        return FileUtils.deleteQuietly(file);
     }
 
     static void closeQuietly(Closeable closeable) {
@@ -82,8 +116,8 @@ class InternalUtils {
         return android.util.Log.getStackTraceString(tr);
     }
 
-    static boolean zippingFiles(File[] files, File output) {
-        if (files == null || files.length == 0) return false;
+    static boolean zippingFiles(List<File> files, File output) {
+        if (files == null || files.size() == 0) return false;
 
         BufferedInputStream in = null;
         ZipOutputStream out = null;
@@ -104,9 +138,7 @@ class InternalUtils {
             return true;
 
         } catch (Exception e) {
-            if (BuildConfig.DEBUG) {
-                e.printStackTrace();
-            }
+            Logger.w(e);
             return false;
 
         } finally {

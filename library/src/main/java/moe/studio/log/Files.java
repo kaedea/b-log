@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.util.Pools;
 
@@ -13,6 +14,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings("WeakerAccess")
 class Files {
 
     private static Files sInstance;
@@ -33,6 +38,7 @@ class Files {
     private final LogFormatter mFormatter;
     private final SimpleDateFormat mNameFormatter = new SimpleDateFormat(
             "yyyyMMdd", Locale.getDefault());
+    private final byte[] mLock = new byte[0];
 
     private Files(LogSetting setting) {
         mSetting = setting;
@@ -54,28 +60,35 @@ class Files {
         sInstance = null;
     }
 
-    /**
-     * @return ROOT_DIR/20160927-main.log
-     */
-    public String getLogPath() {
+    // ROOT_DIR/20160927-main.log
+    @Nullable
+    public File getLogFile() {
+        if (mSetting.getLogDirectory() == null) {
+            return null;
+        }
         String date = mNameFormatter.format(System.currentTimeMillis());
-        return InternalUtils.ensureSeparator(mSetting.getLogDir()) + date + FILE_HYPHEN + InternalUtils.getProcessName()
-                + LOG_FILE_EXTENSION;
+        return new File(mSetting.getLogDirectory(), date + FILE_HYPHEN + InternalUtils.getProcessName()
+                + LOG_FILE_EXTENSION);
     }
 
-    /**
-     * @return ROOT_DIR/20160927-main.event
-     */
-    public String getEventPath() {
+    // ROOT_DIR/20160927-main.event
+    @Nullable
+    public File getEventFile() {
+        if (mSetting.getLogDirectory() == null) {
+            return null;
+        }
         String date = mNameFormatter.format(System.currentTimeMillis());
-        return InternalUtils.ensureSeparator(mSetting.getLogDir()) + date + FILE_HYPHEN + InternalUtils.getProcessName()
-                + EVENT_FILE_EXTENSION;
+        return new File(mSetting.getLogDirectory(), date + FILE_HYPHEN + InternalUtils.getProcessName()
+                + EVENT_FILE_EXTENSION) ;
     }
 
-    /**
-     * @return ROOT_DIR/20160927-all.zip
-     */
-    public String getZipPath(int mode) {
+    // ROOT_DIR/20160927-all.zip
+    @Nullable
+    public File getZipFile(int mode) {
+        if (mSetting.getLogDirectory() == null) {
+            return null;
+        }
+
         String suffix;
         switch (mode) {
             case LogSetting.EVENT:
@@ -91,58 +104,116 @@ class Files {
         }
 
         String date = mNameFormatter.format(System.currentTimeMillis());
-        return InternalUtils.ensureSeparator(mSetting.getLogDir()) + date + FILE_HYPHEN + suffix
-                + ZIP_FILE_EXTENSION;
+        return new File(mSetting.getLogDirectory(), date + FILE_HYPHEN + suffix
+                + ZIP_FILE_EXTENSION);
     }
 
-    public boolean canWrite(String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            if (file.isDirectory()) InternalUtils.deleteQuietly(file);
-
-        } else {
-            try {
-                File parentFile = file.getParentFile();
-                parentFile.mkdirs();
-                file.createNewFile();
-            } catch (Exception e) {
-                if (mSetting.debuggable()) {
-                    e.printStackTrace();
-                }
-            }
+    public boolean canWrite(File file) {
+        try {
+            InternalUtils.checkCreateFile(file);
+        } catch (IOException e) {
+            Logger.w( "Can not create file.", e);
+            return false;
         }
 
-        return file.exists() && file.canWrite();
+        if (!file.canWrite()) {
+            Logger.w("Log file is not allowed to be written.");
+            return false;
+        }
+
+        return true;
     }
 
     @WorkerThread
-    public synchronized void writeToFile(List<LogMessage> logMessages, String filePath) {
+    public void writeToFile(List<LogMessage> logMessages, File file) {
+        if (!file.exists()) {
+            Logger.w("Log file not exist, can not write!");
+            return;
+        }
+
+        RandomAccessFile lockRaf = null;
+        FileChannel lockChannel = null;
+        FileLock fileLock = null;
         PrintWriter printWriter = null;
+
         try {
-            File file = new File(filePath);
-            if (!file.exists()) return;
+            lockRaf = new RandomAccessFile(file, "rw");
+            lockChannel = lockRaf.getChannel();
+            fileLock = lockChannel.lock();
 
-            FileOutputStream fos = new FileOutputStream(file, true);
-            OutputStreamWriter writer = new OutputStreamWriter(fos, "utf-8");
-            printWriter = new PrintWriter(writer);
+            synchronized (mLock) {
+                FileOutputStream fos = new FileOutputStream(file, true);
+                OutputStreamWriter writer = new OutputStreamWriter(fos, "utf-8");
+                printWriter = new PrintWriter(writer);
 
-            for (LogMessage logMessage : logMessages) {
-                printWriter.println(logMessage.buildMessage(mFormatter));
+                for (LogMessage logMessage : logMessages) {
+                    printWriter.println(logMessage.buildMessage(mFormatter));
+                }
             }
-
         } catch (IOException e) {
-            if (mSetting.debuggable()) {
-                e.printStackTrace();
-            }
+            Logger.w(e);
 
         } finally {
             InternalUtils.closeQuietly(printWriter);
+            if (fileLock != null) {
+                try {
+                    fileLock.release();
+                } catch (IOException e) {
+                    Logger.w(e);
+                }
+            }
+            InternalUtils.closeQuietly(lockChannel);
+            InternalUtils.closeQuietly(lockRaf);
+        }
+    }
+
+    @WorkerThread
+    public void writeToFile(LogMessage logMessage, File file) {
+        if (!file.exists()) {
+            Logger.w("Log file not exist, can not write!");
+            return;
+        }
+        RandomAccessFile lockRaf = null;
+        FileChannel lockChannel = null;
+        FileLock fileLock = null;
+        PrintWriter printWriter = null;
+
+        try {
+            lockRaf = new RandomAccessFile(file, "rw");
+            lockChannel = lockRaf.getChannel();
+            fileLock = lockChannel.lock();
+
+            synchronized (mLock) {
+                FileOutputStream fos = new FileOutputStream(file, true);
+                OutputStreamWriter writer = new OutputStreamWriter(fos, "utf-8");
+                printWriter = new PrintWriter(writer);
+                printWriter.println(logMessage.buildMessage(mFormatter));
+            }
+        } catch (IOException e) {
+            Logger.w(e);
+
+        } finally {
+            InternalUtils.closeQuietly(printWriter);
+            if (fileLock != null) {
+                try {
+                    fileLock.release();
+                } catch (IOException e) {
+                    Logger.w(e);
+                }
+            }
+            InternalUtils.closeQuietly(lockChannel);
+            InternalUtils.closeQuietly(lockRaf);
         }
     }
 
     @WorkerThread
     public void cleanExpiredLogs() {
-        File folder = new File(mSetting.getLogDir());
+        File folder = mSetting.getLogDirectory();
+        if (folder == null) {
+            Logger.w("Log directory is null.");
+            return;
+        }
+
         if (folder.exists() && folder.isDirectory()) {
             File[] allFiles = folder.listFiles(new FilenameFilter() {
                 @Override
@@ -163,7 +234,7 @@ class Files {
                 }
 
                 if (isExpired(fileDateInfo)) {
-                    InternalUtils.deleteQuietly(file);
+                    InternalUtils.delete(file);
                 }
             }
         }
@@ -191,11 +262,15 @@ class Files {
     }
 
     public File[] queryFilesByDate(final int mode, long ms) {
-        final String name = mNameFormatter.format(new Date(ms));
-        File folder = new File(mSetting.getLogDir());
+        File folder = mSetting.getLogDirectory();
+        if (folder == null) {
+            Logger.w("Log directory is null.");
+            return null;
+        }
 
+        final String name = mNameFormatter.format(new Date(ms));
         if (folder.exists() && folder.isDirectory()) {
-            File[] allFiles = folder.listFiles(new FilenameFilter() {
+            return folder.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String filename) {
                     switch (mode) {
@@ -213,17 +288,20 @@ class Files {
                     }
                 }
             });
-            return allFiles;
 
         }
         return null;
     }
 
     public File[] queryFiles(final int mode) {
-        File folder = new File(mSetting.getLogDir());
+        File folder = mSetting.getLogDirectory();
+        if (folder == null) {
+            Logger.w("Log directory is null.");
+            return null;
+        }
 
         if (folder.exists() && folder.isDirectory()) {
-            File[] allFiles = folder.listFiles(new FilenameFilter() {
+            return folder.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String filename) {
                     switch (mode) {
@@ -241,7 +319,6 @@ class Files {
                     }
                 }
             });
-            return allFiles;
 
         }
         return null;
@@ -251,10 +328,11 @@ class Files {
     /**
      * Message Entity
      */
+    @SuppressWarnings({"WeakerAccess", "unused"})
     public static class LogMessage {
         private static final Pools.SynchronizedPool<LogMessage> sPool =
-                new Pools.SynchronizedPool(20);
-        public int logType;
+                new Pools.SynchronizedPool<>(20);
+        public int priority;
         public long time;
         public String tag;
         public String msg;
@@ -269,8 +347,8 @@ class Files {
             return (instance != null) ? instance : new LogMessage();
         }
 
-        public void setMessage(int logType, long time, String tag, String thread, String msg) {
-            this.logType = logType;
+        public void setMessage(int priority, long time, String tag, String thread, String msg) {
+            this.priority = priority;
             this.time = time;
             this.tag = tag;
             this.thread = thread;
@@ -278,7 +356,7 @@ class Files {
         }
 
         public String buildMessage(LogFormatter formatter) {
-            return formatter.buildMessage(logType, time, tag, thread, msg);
+            return formatter.buildMessage(priority, time, tag, thread, msg);
         }
 
         public void recycle() {

@@ -2,7 +2,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
 // load properties
@@ -13,7 +13,7 @@ if(projectPropertiesFile.exists()){
     properties.load(projectPropertiesFile.newDataInputStream())
 }
 
-File localPropertiesFile = project.file("local.properties");
+File localPropertiesFile = rootProject.file("local.properties");
 if(localPropertiesFile.exists()){
     properties.load(localPropertiesFile.newDataInputStream())
 }

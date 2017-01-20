@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -12,6 +12,7 @@ import java.util.Locale;
  * @version date 16/9/25
  */
 
+@SuppressWarnings("WeakerAccess")
 class LogFormatterImpl implements LogFormatter {
 
     private final boolean mShowThreadInfo;
@@ -33,11 +34,11 @@ class LogFormatterImpl implements LogFormatter {
     }
 
     @Override
-    public String buildMessage(int logType, long time, String tag, String thread, String msg) {
+    public String buildMessage(int priority, long time, String tag, String thread, String msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(mDateFormatter.format(time))
                 .append("  ")
-                .append(LogLevel.getLevelName(logType))
+                .append(LogPriority.getName(priority))
                 .append("/")
                 .append(tag)
                 .append("  ");
@@ -51,7 +52,6 @@ class LogFormatterImpl implements LogFormatter {
             sb.append("  ")
                     .append(msg);
         }
-
 
         return sb.toString();
     }

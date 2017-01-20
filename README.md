@@ -8,10 +8,6 @@
 BLog is an Android LogCat extended Utility. It can simplify the way you use
 {@link android.util.Log}, as well as write our log message into file for after support.
 
-> LOG 是任何一种编程语言的第一个API，通常被初学者用来打印 `Hello, World!`。 有研究显示，
-不使用 LOG 或者使用姿势错误的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟
-自己不爱的人结婚，而其馀叁成的人最後只能把遗产留给自己的猫。毕竟爱情需要书写，不能是一整张白纸。
-
 **BLog is not pronounced 'Blog[blɑg]', but '[bi:bɑg]'.**
 
 
@@ -27,7 +23,7 @@ control the Log Block as the following snippet.**
 
 ```java
 if (BuildConfig.DEBUG) {
-  BLog.v(TAG, "log verbose");
+  BLog.v(TAG, "og verbose");
 }
 ```
 
@@ -38,7 +34,7 @@ Please try `best performance` in any case. :)
 #### Dependency & Initialization
 Add dependency
 ```java
-    compile 'moe.kaede:blog:0.3.0'  // Please use the latest version
+    compile 'moe.studio:b-log:1.0.0'  // Please use the latest version
 ```
 Init
 ```java

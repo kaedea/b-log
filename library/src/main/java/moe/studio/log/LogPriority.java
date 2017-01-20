@@ -1,29 +1,34 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-package moe.kaede.log;
+package moe.studio.log;
 
 import android.util.Log;
 
 /**
- * Log Level, see {@link LogSetting}
+ * Log Priority, see {@link LogSetting}
  *
  * @author kaede
  * @version date 16/9/22
  */
 
-public class LogLevel {
+@SuppressWarnings("WeakerAccess")
+public class LogPriority {
+
     public static final int VERBOSE = Log.VERBOSE;
     public static final int DEBUG = Log.DEBUG;
     public static final int INFO = Log.INFO;
     public static final int WARN = Log.WARN;
     public static final int ERROR = Log.ERROR;
     public static final int ASSERT = Log.ASSERT;
-    public static final int NONE = ASSERT + 1;
+    public static final int NONE = ASSERT + 1; // Do not log.
 
-    public static String getLevelName(int logType) {
-        switch (logType) {
+    /**
+     * Get name for the current log level.
+     */
+    public static String getName(int priority) {
+        switch (priority) {
             case VERBOSE:
                 return "VERBOSE";
             case DEBUG:
@@ -43,7 +48,10 @@ public class LogLevel {
         }
     }
 
-    public static boolean isLevelValid(int level) {
-        return (level >= VERBOSE && level <= NONE);
+    /**
+     * Whether the given log level in valid.
+     */
+    public static boolean isValid(int priority) {
+        return (priority >= VERBOSE && priority <= NONE);
     }
 }

@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2016. Kaede (kidhaibara@gmail.com)
+ * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
 apply plugin: 'com.android.library'
 
-version = "0.3.0"
+version = "1.0.0"
 
 android {
     compileSdkVersion rootProject.ext.targetSdkVersion
@@ -36,7 +36,7 @@ dependencies {
     // compile 'com.android.support:appcompat-v7:24.1.1'
     compile "com.android.support:support-v4:${rootProject.ext.androidSupportLibraryVersion}"
     compile 'commons-io:commons-io:2.5'
-    compile 'moe.kaede:dispatcher:0.1.0'
+    compile 'moe.studio:dispatcher:0.1.1'
 
 }
 
@@ -85,4 +85,4 @@ android.libraryVariants.all { variant ->
     }
 }
 
-apply from: "bintrayUpload.gradle"
+apply from: rootProject.file('bintrayUpload.gradle')
