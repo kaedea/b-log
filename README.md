@@ -34,10 +34,15 @@ if (BuildConfig.DEBUG) {
 Please try `best performance` in any case. :)
 
 
-### Usage
-#### Dependency
+### Getting Started
+#### Dependency & Initialization
+Add dependency
 ```java
-    compile 'moe.kaede:blog:0.1.5'
+    compile 'moe.kaede:blog:0.3.0'  // Please use the latest version
+```
+Init
+```java
+BLog.initialize(context);
 ```
 
 #### Basic

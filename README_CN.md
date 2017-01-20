@@ -24,10 +24,15 @@ if (BuildConfig.DEBUG) {
 ```
 
 
-### 使用
-#### 依赖
+### 开始使用
+#### 依赖和初始化
+添加依赖
 ```java
-    compile 'moe.kaede:blog:0.1.5'
+    compile 'moe.kaede:blog:0.3.0'  // 记得使用最新版本
+```
+初始化
+```java
+BLog.initialize(context);
 ```
 
 #### 基本用法
