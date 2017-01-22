@@ -31,10 +31,8 @@ if (BuildConfig.DEBUG) {
 Please try `best performance` in any case. :)
 
 
-### Getting Started
----
-
-#### Dependency & Initialization
+## Getting Started
+### Dependency & Initialization
 Add dependency.
 ```java
 compile 'moe.studio:b-log:1.0.0'  // Please use the latest version
@@ -44,7 +42,7 @@ Initialization.
 BLog.initialize(context);
 ```
 
-#### Basic
+### Basic
 Print log message.
 ```java
 BLog.v(TAG, "log verbose");
@@ -87,7 +85,7 @@ attaches.add(outDate2);
 File attach = BLog.zippingLogFiles(LogSetting.LOG | LogSetting.EVENT, attaches);
 ```
 
-#### Advanced
+### Advanced
 Print exception.
 ```java
 Exception exception = new RuntimeException("...");
@@ -131,7 +129,7 @@ LogSetting setting = new LogSetting.Builder(context)
 BLog.initialize(setting);
 ```
 
-#### Custom Setting
+### Custom Setting
 Initialize BLog
 ```java
 BLog.initialize(Context);
@@ -157,3 +155,5 @@ In general, BLog will shutdown itself when the application is terminated, but yo
 
 For more usage showcases, please check out the [test codes](https://github.com/kaedea/b-log/tree/release/bintray/library/src/androidTest/java/moe/studio/log).
 
+## License
+Licensed under the Apache License, Version 2.0 (the "License").
