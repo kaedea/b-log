@@ -1,5 +1,5 @@
 
-## BLog - Android Log Utils
+## BLog - Android Log Extended Utility
 [中文](/README_CN.md)
 <img align="right" src="https://img.shields.io/badge/minSdk-9-brightgreen.svg"/>
 <img align="right" src="https://api.bintray.com/packages/kaedea/moe-studio/b-log/images/download.svg" href = "https://bintray.com/kaedea/moe-studio/b-log/_latestVersion"/>
@@ -32,6 +32,8 @@ Please try `best performance` in any case. :)
 
 
 ### Getting Started
+---
+
 #### Dependency & Initialization
 Add dependency.
 ```java
