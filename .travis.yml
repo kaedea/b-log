@@ -23,12 +23,12 @@ deploy:
   api_key:
     secure: ${GH_TOKEN}
   file:
-    - logger/build/libs/blog-${TRAVIS_TAG}-javadoc.jar
-    - logger/build/libs/blog-${TRAVIS_TAG}.jar
+    - b-log/build/libs/b-log-${TRAVIS_TAG}-javadoc.jar
+    - b-log/build/libs/b-log-${TRAVIS_TAG}.jar
   skip_cleanup: true
   on:
     tags: true
 
 branches:
   only:
-  - /^build.*$/
+  - /$bintrayUpload/
