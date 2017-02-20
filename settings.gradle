@@ -2,4 +2,4 @@
  * Copyright (c) 2017. Kaede <kidhaibara@gmail.com)>
  */
 
-include ':logger'
+include ':b-log'
