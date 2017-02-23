@@ -2,42 +2,52 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 // Load properties.
-Properties properties = new Properties()
+Properties pros = new Properties()
 
-File projectPropertiesFile = project.file("project.properties");
-if(projectPropertiesFile.exists()){
-    properties.load(projectPropertiesFile.newDataInputStream())
+// Add Project's properties.
+def iterator = properties.keySet().iterator()
+while (iterator.hasNext()) {
+    def key = iterator.next()
+    def value = properties.get(key)
+    if (value != null)
+        pros.put(key, value)
 }
-File localPropertiesFile = rootProject.file("local.properties");
-if(localPropertiesFile.exists()){
-    properties.load(localPropertiesFile.newDataInputStream())
+
+// Add properties from files.
+File[] files = [project.file("project.properties"), rootProject.file("local.properties")]
+for (File item : files) {
+    if (item.exists())
+        pros.load(item.newDataInputStream())
 }
 
-def bintrayRepo = properties.getProperty("bintary.repo")
-def projectGroupId = properties.getProperty("project.groupId")
-def projectVersionName = properties.getProperty("project.version")
-def projectSiteUrl = properties.getProperty("project.siteUrl")
-def projectGitUrl = properties.getProperty("project.gitUrl")
-def projectIssueUrl = properties.getProperty("project.issueUrl")
-def projectDesc = properties.getProperty("project.description")
+// Define config.
+def projectGroupId = pros.getProperty("project.groupId")
+def projectVersion = pros.getProperty("project.version")
+def projectSiteUrl = pros.getProperty("project.siteUrl") ? pros.getProperty("project.siteUrl") : "No Website"
+def projectGitUrl = pros.getProperty("project.gitUrl") ? pros.getProperty("project.gitUrl") : "No Git Url"
+def projectIssueUrl = pros.getProperty("project.issueUrl") ? pros.getProperty("project.issueUrl") : "No Issue Url"
+def projectDesc = pros.getProperty("project.description") ? pros.getProperty("project.description") : "No Description"
+// def javadocName = pros.getProperty("javadoc.name")
 
-def developerName = properties.getProperty("developer.name")
-def developerEmail = properties.getProperty("developer.email")
-// def javadocName = properties.getProperty("javadoc.name")
-
-def bintrayUser = properties.getProperty("bintray.user")
-def bintrayApiKey = properties.getProperty("bintray.apikey")
+def bintrayRepo = pros.getProperty("bintary.repo") ? pros.getProperty("bintary.repo") : "maven"
+def bintrayUser = pros.getProperty("bintray.user") ? pros.getProperty("bintray.user") : System.getenv('BT_USER')
+def bintrayApiKey = pros.getProperty("bintray.apikey") ? pros.getProperty("bintray.apikey") : System.getenv('BT_KEY')
+def developerName = pros.getProperty("developer.name") ? pros.getProperty("developer.name") : "No Developer"
+def developerSite = pros.getProperty("developer.siteUrl") ? pros.getProperty("developer.siteUrl") : "No Developer Site"
+def developerEmail = pros.getProperty("developer.email") ? pros.getProperty("developer.email") : "No Email"
 
 group = projectGroupId
-version = projectVersionName
+version = projectVersion
 
+// BintrayUpload Task.
 def hasAndroidPlugin() {
-    return getPlugins().inject(false) { a, b->
+    return getPlugins().inject(false) { a, b ->
         def classStr = b.getClass().name
         def isAndroid = ("com.android.build.gradle.LibraryPlugin" == classStr) || ("com.android.build.gradle.AppPlugin" == classStr)
         a || isAndroid
     }
 }
+
 task sourcesJar(type: Jar) {
     if (hasAndroidPlugin()) {
         from android.sourceSets.main.java.srcDirs
@@ -47,14 +57,15 @@ task sourcesJar(type: Jar) {
         classifier = 'sources'
     }
 }
+
 artifacts {
     archives sourcesJar
     // archives javadocJar
 }
 
 bintray {
-    user = bintrayUser?.trim() ? bintrayUser : System.getenv('BT_USER')
-    key = bintrayApiKey?.trim() ? bintrayApiKey : System.getenv('BT_KEY')
+    user = bintrayUser
+    key = bintrayApiKey
     configurations = ['archives']
     pkg {
         repo = bintrayRepo
@@ -69,12 +80,12 @@ bintray {
         publicDownloadNumbers = true
         // Optional package-level attributes
         attributes = ['Developer': developerName,
-                      'Site'     : 'www.kaedea.com',
+                      'Site'     : developerSite,
                       'Support'  : developerEmail]
         version {
-            name = projectVersionName
+            name = projectVersion
             desc = projectDesc
-            vcsTag = projectVersionName
+            vcsTag = projectVersion
             attributes = ['Version': "${project.version}"]
         }
     }
