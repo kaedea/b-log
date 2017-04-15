@@ -1,5 +1,6 @@
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+/*
+ * Copyright (c) 2017. Kaede (kidhaibara@gmail.com) All Rights Reserved.
+ */
 
 // Load properties.
 Properties pros = new Properties()
@@ -20,25 +21,32 @@ for (File item : files) {
         pros.load(item.newDataInputStream())
 }
 
-// Define config.
+// Core config.
+if (!pros.getProperty("project.groupId")) throw new StopActionException("NO GROUPID SPECIFICED")
+if (!pros.getProperty("project.version")) throw new StopActionException("NO VERSION SPECIFICED")
 def projectGroupId = pros.getProperty("project.groupId")
-def projectName = pros.getProperty("project.name") ? pros.getProperty("project.name") : "${project.name}"
 def projectVersion = pros.getProperty("project.version")
-def projectSiteUrl = pros.getProperty("project.siteUrl") ? pros.getProperty("project.siteUrl") : "No Website"
-def projectGitUrl = pros.getProperty("project.gitUrl") ? pros.getProperty("project.gitUrl") : "No Git Url"
-def projectIssueUrl = pros.getProperty("project.issueUrl") ? pros.getProperty("project.issueUrl") : "No Issue Url"
-def projectDesc = pros.getProperty("project.description") ? pros.getProperty("project.description") : "No Description"
+def bintrayUser = pros.getProperty("bintray.user") ? pros.getProperty("bintray.user") : System.getenv('BT_USER')
+def bintrayApiKey = pros.getProperty("bintray.apikey") ? pros.getProperty("bintray.apikey") : System.getenv('BT_KEY')
+// if (!bintrayUser || !bintrayApiKey) throw new StopActionException("NO BINTRAY ACCOUNT SPECIFICED")
+
+// Optional config.
+def projectSiteUrl = pros.getProperty("project.siteUrl") ? pros.getProperty("project.siteUrl") : "NO WEBSITE"
+def projectGitUrl = pros.getProperty("project.gitUrl") ? pros.getProperty("project.gitUrl") : "NO GIT URL"
+def projectIssueUrl = pros.getProperty("project.issueUrl") ? pros.getProperty("project.issueUrl") : "NO ISSUE URL"
+def projectDesc = pros.getProperty("project.description") ? pros.getProperty("project.description") : "NO DESCRIPTION"
 // def javadocName = pros.getProperty("javadoc.name")
 
 def bintrayRepo = pros.getProperty("bintary.repo") ? pros.getProperty("bintary.repo") : "maven"
-def bintrayUser = pros.getProperty("bintray.user") ? pros.getProperty("bintray.user") : System.getenv('BT_USER')
-def bintrayApiKey = pros.getProperty("bintray.apikey") ? pros.getProperty("bintray.apikey") : System.getenv('BT_KEY')
-def developerName = pros.getProperty("developer.name") ? pros.getProperty("developer.name") : "No Developer"
-def developerSite = pros.getProperty("developer.siteUrl") ? pros.getProperty("developer.siteUrl") : "No Developer Site"
-def developerEmail = pros.getProperty("developer.email") ? pros.getProperty("developer.email") : "No Email"
+def developerName = pros.getProperty("developer.name") ? pros.getProperty("developer.name") : "NO DEVELOPER"
+def developerSite = pros.getProperty("developer.siteUrl") ? pros.getProperty("developer.siteUrl") : "NO DEVELOPER SITE"
+def developerEmail = pros.getProperty("developer.email") ? pros.getProperty("developer.email") : "NO EMAIL"
 
 group = projectGroupId
 version = projectVersion
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 // BintrayUpload Task.
 def hasAndroidPlugin() {
@@ -61,7 +69,6 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives sourcesJar
-    // Archive javadoc.jar may cause some problems.
     // archives javadocJar
 }
 
@@ -71,7 +78,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = bintrayRepo
-        name = projectName
+        name = "${project.name}"
         desc = projectDesc
         licenses = ['Apache-2.0']
         userOrg = user
@@ -85,7 +92,7 @@ bintray {
                       'Site'     : developerSite,
                       'Support'  : developerEmail]
         version {
-            name = "${project.version}"
+            name = projectVersion
             desc = projectDesc
             vcsTag = projectVersion
             attributes = ['Version': "${project.version}"]
@@ -100,4 +107,27 @@ tasks.withType(Javadoc).all {
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+}
+
+// JFrog SNAPSHOT.
+apply plugin: "com.jfrog.artifactory"
+
+artifactory {
+    contextUrl = 'http://oss.jfrog.org/artifactory'
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+        }
+    }
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = bintray.user
+            password = bintray.key
+            maven = true
+        }
+        defaults {
+            publishConfigs('archives')
+        }
+    }
 }
