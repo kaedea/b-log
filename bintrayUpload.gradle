@@ -22,6 +22,7 @@ for (File item : files) {
 
 // Define config.
 def projectGroupId = pros.getProperty("project.groupId")
+def projectName = pros.getProperty("project.name") ? pros.getProperty("project.name") : "${project.name}"
 def projectVersion = pros.getProperty("project.version")
 def projectSiteUrl = pros.getProperty("project.siteUrl") ? pros.getProperty("project.siteUrl") : "No Website"
 def projectGitUrl = pros.getProperty("project.gitUrl") ? pros.getProperty("project.gitUrl") : "No Git Url"
@@ -60,6 +61,7 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives sourcesJar
+    // Archive javadoc.jar may cause some problems.
     // archives javadocJar
 }
 
@@ -69,7 +71,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = bintrayRepo
-        name = "${project.name}"
+        name = projectName
         desc = projectDesc
         licenses = ['Apache-2.0']
         userOrg = user
@@ -83,7 +85,7 @@ bintray {
                       'Site'     : developerSite,
                       'Support'  : developerEmail]
         version {
-            name = projectVersion
+            name = "${project.version}"
             desc = projectDesc
             vcsTag = projectVersion
             attributes = ['Version': "${project.version}"]
