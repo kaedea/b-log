@@ -28,7 +28,7 @@ if (BuildConfig.DEBUG) {
 #### 依赖和初始化
 添加依赖
 ```java
-    compile 'moe.kaede:blog:0.3.0'  // 记得使用最新版本
+    compile 'moe.studio:logger:latest.release'
 ```
 初始化
 ```java

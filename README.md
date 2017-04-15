@@ -35,7 +35,7 @@ Please try `best performance` in any case. :)
 ### Dependency & Initialization
 Add dependency.
 ```java
-compile 'moe.studio:b-log:1.1.0'  // Please use the latest version
+    compile 'moe.studio:logger:latest.release'
 ```
 Initialization.
 ```java
